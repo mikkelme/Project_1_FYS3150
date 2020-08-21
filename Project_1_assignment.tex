@@ -1,0 +1,115 @@
+\documentclass[american,a4paper,12pt]{article}
+\usepackage[T1]{fontenc} %for å bruke æøå
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} %for å inkludere grafikk
+\usepackage{verbatim} %for å inkludere filer med tegn LaTeX ikke liker
+\usepackage{mathpazo}
+
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{multicol}
+\usepackage{siunitx}
+\usepackage{float}
+\usepackage{subcaption}
+
+
+\renewcommand{\vec}[1]{\mathbf{#1}} %ny definisjon av \vec og \hat så det blir penere
+
+
+\captionsetup[table]{skip=10pt}
+\bibliographystyle{plain}
+
+\title{Project 1: Computational Physics - FYS3150}
+\author{Mikkel Metzsch Jensen and Others}
+\date{September 09, 2020}
+\begin{document}
+\maketitle
+
+\section{Part a}
+The solution can be shown be doing the following rewritting of the Poisson equation:
+\begin{align*}
+  -u''(x_i) = f(x_i)
+\end{align*}
+\begin{align*}
+  -\frac{v_{i+1} + 2v_i - v_{i+1}}{h^2} = f(x_i)
+\end{align*}
+\begin{align*}
+  -v_{i-1} + 2v_i - v_{i+1} = h^2f(x_i)
+\end{align*}
+As we try to setup the equation for f($\vec{v}$) for each individual component the matrix A starts to appear.
+\begin{align*}
+      \begin{bmatrix}
+        2 & -1 & 0 & \cdots & 0
+      \end{bmatrix}
+      \begin{bmatrix}
+        v_0 \\
+        \vdots \\
+        v_{n+1}
+      \end{bmatrix}
+= h^2f(x_0)
+\end{align*}
+\begin{align*}
+      \begin{bmatrix}
+        2 & -1 & 0 & \cdots & \cdots & 0 \\
+        -1 & 2 & -1 & 0 & \cdots & \cdots
+      \end{bmatrix}
+      \begin{bmatrix}
+        v_0 \\
+        \vdots \\
+        v_{n+1}
+      \end{bmatrix}
+= h^2
+      \begin{bmatrix}
+        f(x_0) \\
+        f(x_1)
+      \end{bmatrix}
+\end{align*}
+\begin{align*}
+  \vdots
+\end{align*}
+\begin{align*}
+      \begin{bmatrix}
+        2 & -1 & 0 & \cdots & \cdots & 0 \\
+        -1 & 2 & -1 & 0 & \cdots & \cdots \\
+        0 & -1 & 2 & -1 & 0 & \cdots \\
+         & \cdots & \cdots & \cdots & \cdots & \cdots \\
+        0 & \cdots & & -1 & 2 & -1 \\
+        0 & \cdots & & 0 & -1 & 2
+      \end{bmatrix}
+      \begin{bmatrix}
+        v_0 \\
+        \vdots \\
+        v_{n+1}
+      \end{bmatrix}
+= h^2
+      \begin{bmatrix}
+        f(x_0) \\
+        f(x_1) \\
+        \vdots \\
+        f_{n+1}
+      \end{bmatrix}
+\end{align*}
+By using the definition from the assignment description we arrive at the the expression
+\begin{align*}
+  \vec{A}\vec{v} = \vec{\tilde{b}}
+\end{align*}
+We assume that $f(x) = 100e^{-10x}$. The solution is given to be $u(x) = 1 - (1 - e^{-10})x - e^{-10x}$. We can ensure that this is true by inserting it into the Poisson equation. We first find the double derivative of u(x):
+\begin{align*}
+  u'(x) = -(1 - e^{-10}) + 10e^{-10x}, \quad u''(x) = -100e^{-10x}
+\end{align*}
+We now see that the solution satisfy the Poisson equation:
+\begin{align*}
+  -u''(x) = 100e^{-10x} = f(x)
+\end{align*}
+
+\section{Part b}
+
+
+
+
+
+
+
+
+
+\end{document}
