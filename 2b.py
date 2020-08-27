@@ -1,13 +1,60 @@
 import numpy as np
-import matplotlib as pyplot
+import matplotlib.pyplot as plt
 
-n = 4
+n = 100
 h = 1/(n+1)
 
-a = np.array(n*[-1])
-b = np.array(n*[2])
-c = np.array(n*[-1])
+a = np.array(n*[-1])/h**2
+b = np.array(n*[2])/h**2
+c = np.array(n*[-1])/h**2
 
+a[0] = 0; c[-1] = 0
+
+
+u = np.zeros(n)
+u[0] = 0
+u[-1] = 0
+
+
+def f(x):
+    return 100*np.exp(-10*x)
+
+def analytic(x):
+    return 1 - (1 - np.exp(-10))*x - np.exp(-10*x)
+
+x = np.linspace(0,1,n)
+f = f(x)
+
+
+#Forward substitution
+b_tilde = np.zeros(n)
+f_tilde = np.zeros(n)
+b_tilde[0] = b[0]
+f_tilde[0] = f[0]
+
+for i in range(1,n):
+    b_tilde[i] = b[i] - a[i]*c[i-1]/b_tilde[i-1]
+    f_tilde[i] = f[i] - a[i]*f_tilde[i-1]/b_tilde[i-1]
+
+
+#Backward substitution
+#u[-1] = f_tilde[-1]/b_tilde[-1]
+for j in range(1 , n):
+    i = n-j
+    u[i-1] = (f_tilde[i-1] - c[i-1]*u[i])/b_tilde[i-1]
+u[0] = 0
+
+plt.plot(x, u, label = "numerical")
+plt.plot(x, analytic(x), label = "analytical")
+plt.legend()
+plt.show()
+
+
+
+
+
+
+"""
 abc = np.zeros((n,n))
 #fill in abc-array
 for i in range(n):
@@ -18,21 +65,4 @@ for i in range(n):
             abc[i,j] = b[i]
         if i == j - 1:
             abc[i,j] = c[i]
-
-v = np.ones(n)
-f = np.zeros(n)
-
-
-print(abc[0]*v)
-for i in range(n):
-    f[i] = (abc[0]*v)/h^2
-    v[i+1] = ?
-
-"""
-#Step 0
-f[0] = (b[0]*v[0] - c[0+1]*v[0+1])/h^2
-v[0+1] = (- a[i-1]*v[i-1] + b[i]**v[i] - h**2*f[i])/c[i+1]
-for i in range(n):
-    f[i] = (- a[i-1]v[i-1] + b[i]*v[i] - c[i+1]*v[i+1])/h^2
-    v[i+1] = (- a[i-1]*v[i-1] + b[i]**v[i] - h**2*f[i])/c[i+1]
 """
