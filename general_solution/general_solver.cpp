@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
       g_tilde[i] = g[i] - A[i]*g_tilde[i-1]/B_tilde[i-1];
     }
 
-    //cout << g_tilde[0] << endl;
+
     //Backwards Sub
     double *u = new double [n];
     u[0] = 0.;
@@ -80,12 +80,12 @@ int main(int argc, char *argv[])
     ofile.open("output_file");
     ofile << setiosflags(ios::showpoint | ios::uppercase);
      //      ofile << "       x:             approx:          exact:       relative error" << endl;
-    for (int i = 1; i < n-1; i++){
+    for (int i = 0; i < n; i++){
       double RelativeError = fabs((analytic(x[i]) - u[i])/analytic(x[i]));
       ofile << setw(15) << setprecision(8) << x[i];
       ofile << setw(15) << setprecision(8) << u[i];
       ofile << setw(15) << setprecision(8) << analytic(x[i]);
-      ofile << setw(15) << setprecision(8) << log10(RelativeError) << endl;
+      ofile << setw(15) << setprecision(8) << RelativeError << endl;
     }
     ofile.close();
 
