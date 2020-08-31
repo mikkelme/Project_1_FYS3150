@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
       exponent = atoi(argv[4]);
       n = pow(10, exponent);
       h = 1./((double)n - 1.);
+
     }
 
     //Define arrays
@@ -52,9 +53,10 @@ int main(int argc, char *argv[])
 
     double *g = new double [n];
     double *x = new double [n];
+    double hh = h*h;
     for (int i = 0; i < n; i++){
       x[i] = (i)*h;
-      g[i] = pow(h,2)*f(x[i]);
+      g[i] = hh*f(x[i]);
     }
 
     //Forward Sub
