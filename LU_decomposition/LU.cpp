@@ -4,6 +4,8 @@
 #include <cmath>
 #include <string>
 #include <armadillo>
+// If compile gives: "linker command failed" try adding "-larmadillo" at the end of commandline
+//example: c++ -o LU.exe LU.cpp -larmadillo
 // use namespace for output and input
 using namespace std;
 using namespace arma;
@@ -62,11 +64,19 @@ int main(int argc, char *argv[])
         A(i,i)    = b;
         A(i,i+1)  = c; }
     A(n-1,n-2) = a; A(n-1,n-1) = b; A(n-2,n-1) = c;
-
-
-    //vec u(n);
-    //u = solve(A,g);
     vec u  = solve(A,g);
+
+    ofile.open("output_file");
+    ofile << setiosflags(ios::showpoint | ios::uppercase);
+     //      ofile << "       x:             approx:          exact:       relative error" << endl;
+    for (int i = 0; i < n; i++){
+      double RelativeError = fabs((analytic(x[i]) - u[i])/analytic(x[i]));
+      ofile << setw(15) << setprecision(8) << x[i];
+      ofile << setw(15) << setprecision(8) << u[i];
+      ofile << setw(15) << setprecision(8) << analytic(x[i]);
+      ofile << setw(15) << setprecision(8) << RelativeError << endl;
+    }
+    ofile.close();
 
 
 
