@@ -26,8 +26,31 @@
 \maketitle
 
 \section{Introduction}
-  In this project we will investegate different approaches to solving the one-dimensional 
+  In this project we will investegate different approaches to solve the one-dimensional Poisson equation with Dirichlet boundary conditions given as follows:
+  \begin{align*}
+    u''(x) = f(x), \quad x \in (0,1), \quad u(0) = u(1) = 0
+  \end{align*}
+  We will rewrite this as a set of linear equations, and solve it by a number of different computational approaches on either gaussian elimination or LU decomposition. We will solve the equation above with the function:
+  \begin{align*}
+    f(x) = 100e^{-10x}
+  \end{align*}
+  Where the analytical solution then is given as:
+  \begin{align*}
+    u(x) = 1 - (1 - e^{-10})x - e^{-10x}
+  \end{align*}
+  We will use the analytical solution to evaluate the precision of the numerical solutions for different steplength between the discretized gridpoints $x_i$. 
 \section{Method}
+  \subsection{Rewritting the equation as a set of linear equations}
+  \subsection{General solution using Gausian elimination}
+    Forward / Backward sub
+    FLOPS
+  \subsection{Simplified problem specific solution}
+    FLOPS
+  \subsection{LU decomposition}
+    FLOPS
+  \subsection{Comparing precision and error}
+
+
 \section{Implementation?}
 \section{Results}
 \section{Concluding remarks}
