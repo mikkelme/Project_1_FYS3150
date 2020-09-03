@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <cmath>
 #include <string>
+#include <time.h>
 // use namespace for output and input
 using namespace std;
 
@@ -44,10 +45,13 @@ int main(int argc, char *argv[])
     double *A = new double [n];   //A = (double*)malloc(n*sizeof(double));
     double *B = new double [n];   //B = (double*)malloc(n*sizeof(double));
     double *C = new double [n];   //C = (double*)malloc(n*sizeof(double));
-    A[0] = A[n] = a;
+    A[0] = A[n] = a; // setter første/siste element til a
     B[0] = B[n] = b;
     C[0] = C[n] = c;
 
+
+    clock_t start, finish;
+    start = clock();
 
     double *g = new double [n];
     double *x = new double [n];
@@ -75,9 +79,12 @@ int main(int argc, char *argv[])
     u[n-1] = 0.;
     for (int i = n-1; i > 0; i--){
       u[i] = (g_tilde[i] + u[i+1])/B_tilde[i];
-
-
     }
+    
+    finish = clock();
+    double time =(double)(finish - start)/((double) CLOCKS_PER_SEC);
+
+    
     ofile.open("sp_output_file.txt");
     ofile << setiosflags(ios::showpoint | ios::uppercase);
      //      ofile << "       x:             approx:          exact:       relative error" << endl;
@@ -88,6 +95,7 @@ int main(int argc, char *argv[])
       ofile << setw(15) << setprecision(8) << analytic(x[i]);
       ofile << setw(15) << setprecision(8) << log10(RelativeError) << endl;
     }
+    
     ofile.close();
 
     //delete [] x; delete [] d; delete [] b; delete [] solution;
@@ -96,6 +104,6 @@ int main(int argc, char *argv[])
     delete[] A;   //free(A);
     delete[] B;   //free(B);
     delete[] C;   //free(C)
-
+  cout << time*pow(10,6)<<" mu s" <<endl;
   return 0;
 }

@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <cmath>
 #include <string>
+#include <time.h>
 // use namespace for output and input
 using namespace std;
 
@@ -51,6 +52,9 @@ int main(int argc, char *argv[])
       C[i] = c;
     }
 
+    clock_t start, finish;
+    start = clock();
+
     double *g = new double [n];
     double *x = new double [n];
     double hh = h*h;
@@ -76,9 +80,10 @@ int main(int argc, char *argv[])
     u[n-1] = 0.;
     for (int i = n-1; i > 0; i--){
       u[i-1] = g_tilde[i-1] - (C[i-1]*u[i])/B_tilde[i-1];
-
-
     }
+    finish = clock();
+    double time =(double)(finish - start)/((double) CLOCKS_PER_SEC);
+
     ofile.open("output_file");
     ofile << setiosflags(ios::showpoint | ios::uppercase);
      //      ofile << "       x:             approx:          exact:       relative error" << endl;
@@ -103,6 +108,7 @@ int main(int argc, char *argv[])
     delete[] A;   //free(A);
     delete[] B;   //free(B);
     delete[] C;   //free(C)
-
+  
+  cout << time*pow(10,6)<<" mu s" <<endl;
   return 0;
 }
