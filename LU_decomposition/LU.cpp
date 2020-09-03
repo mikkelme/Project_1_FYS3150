@@ -42,9 +42,12 @@ int main(int argc, char *argv[])
       b = atoi(argv[2]);
       c = atoi(argv[3]);
       exponent = atoi(argv[4]);
+
+    }
+
+    for (int exponent = 0; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
       h = 1./((double)n - 1.);
-    }
 
 
     //Matrix
@@ -64,21 +67,29 @@ int main(int argc, char *argv[])
         A(i,i)    = b;
         A(i,i+1)  = c; }
     A(n-1,n-2) = a; A(n-1,n-1) = b; A(n-2,n-1) = c;
-    vec u  = solve(A,g);
+    vec v  = solve(A,g);
 
-    ofile.open("output_file");
+    string argument = to_string(exponent);
+    string output_file = "output_n";
+    output_file.append(argument);
+    output_file.append(".txt");
+
+    ofile.open(output_file);
     ofile << setiosflags(ios::showpoint | ios::uppercase);
+
      //      ofile << "       x:             approx:          exact:       relative error" << endl;
-    for (int i = 0; i < n; i++){
+    ofile << setw(15) << setprecision(8) << time*pow(10,6)<<" mu s" <<endl;
+    for (int i = 1; i < n-1; i++){
       double RelativeError = fabs((analytic(x[i]) - u[i])/analytic(x[i]));
       ofile << setw(15) << setprecision(8) << x[i];
-      ofile << setw(15) << setprecision(8) << u[i];
+      ofile << setw(15) << setprecision(8) << v[i];
       ofile << setw(15) << setprecision(8) << analytic(x[i]);
-      ofile << setw(15) << setprecision(8) << RelativeError << endl;
+      ofile << setw(15) << setprecision(8) << log10(RelativeError) << endl;
     }
     ofile.close();
 
+    cout << "n = 10^" <<  exponent << "   time = " << time*pow(10, 6) << " mu s"<< endl;
 
-
+  }
   return 0;
 }
