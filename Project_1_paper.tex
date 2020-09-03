@@ -38,9 +38,108 @@
   \begin{align*}
     u(x) = 1 - (1 - e^{-10})x - e^{-10x}
   \end{align*}
-  We will use the analytical solution to evaluate the precision of the numerical solutions for different steplength between the discretized gridpoints $x_i$. 
+  We will use the analytical solution to evaluate the precision of the numerical solutions for different steplength between the discretized gridpoints $x_i$.
 \section{Method}
   \subsection{Rewritting the equation as a set of linear equations}
+  In order to solve the Poisson equation numerically we discretize u as $v_i$ with grid points $x_i = ih$ in the interval $x \in [x_0 = 0,x_1 = 1]$. We then have the step length $h = 1/(n + 1)$. We use the following second derivative approximation
+  \begin{align*}
+    -u''(x_i) \approx -\frac{v_{i+1} + 2v_i - v_{i+1}}{h^2} =  f(x_i)
+  \end{align*}
+  $\Longleftrightarrow$
+  \begin{align*}
+    -v_{i-1} + 2v_i - v_{i+1} = h^2f(x_i)
+  \end{align*}
+  We define the colum vector $\vec{v} = [v_1, v_2, \hdots, v_{n+1}]$ and try to setup the equation for every step i. As we do this we see a pattern appearing
+  \begin{align*}
+        \begin{bmatrix}
+          2 & -1 & 0 & \cdots & 0
+        \end{bmatrix}
+        \begin{bmatrix}
+          v_0 \\
+          \vdots \\
+          v_{n+1}
+        \end{bmatrix}
+  = h^2f(x_0)
+  \end{align*}
+  \begin{align*}
+        \begin{bmatrix}
+          2 & -1 & 0 & \cdots & \cdots & 0 \\
+          -1 & 2 & -1 & 0 & \cdots & \cdots
+        \end{bmatrix}
+        \begin{bmatrix}
+          v_0 \\
+          \vdots \\
+          v_{n+1}
+        \end{bmatrix}
+  = h^2
+        \begin{bmatrix}
+          f(x_0) \\
+          f(x_1)
+        \end{bmatrix}
+  \end{align*}
+  \begin{align*}
+    \vdots
+  \end{align*}
+  \begin{align*}
+        \begin{bmatrix}
+          2 & -1 & 0 & \cdots & \cdots & 0 \\
+          -1 & 2 & -1 & 0 & \cdots & \cdots \\
+          0 & -1 & 2 & -1 & 0 & \cdots \\
+           & \cdots & \cdots & \cdots & \cdots & \cdots \\
+          0 & \cdots & & -1 & 2 & -1 \\
+          0 & \cdots & & 0 & -1 & 2
+        \end{bmatrix}
+        \begin{bmatrix}
+          v_0 \\
+          \vdots \\
+          v_{n+1}
+        \end{bmatrix}
+  = h^2
+        \begin{bmatrix}
+          f(x_0) \\
+          f(x_1) \\
+          \vdots \\
+          f_{n+1}
+        \end{bmatrix}
+  \end{align*}
+  From this we see that we can write the problem as a linear set of equation:
+  \begin{align*}
+    \vec{A}\vec{v} = \vec{\tilde{g}}
+  \end{align*}
+  With the following definitions:
+  \begin{align*}
+    \vec{A} =
+    \begin{bmatrix}
+      2 & -1 & 0 & \cdots & \cdots & 0 \\
+      -1 & 2 & -1 & 0 & \cdots & \cdots \\
+      0 & -1 & 2 & -1 & 0 & \cdots \\
+       & \cdots & \cdots & \cdots & \cdots & \cdots \\
+      0 & \cdots & & -1 & 2 & -1 \\
+      0 & \cdots & & 0 & -1 & 2
+    \end{bmatrix}
+    \quad, \vec{v} =
+    \begin{bmatrix}
+      v_0 \\
+      v_1 \\
+      \vdots \\
+      v_{n+1}
+    \end{bmatrix}
+    \quad, \vec{\tilde{g}} = h^2
+    \begin{bmatrix}
+      f(x_0) \\
+      f(x_1) \\
+      \vdots \\
+      f_{n+1}
+    \end{bmatrix}
+  \end{align*}
+  In this project we use $f(x) = 100e^{-10x}$. The solution for the Poisson equation in this case is given to be $u(x) = 1 - (1 - e^{-10})x - e^{-10x}$. We can ensure that this is true by inserting it and checking that the equarion holds remains true. First find the double derivative of u(x):
+  \begin{align*}
+    u'(x) = -(1 - e^{-10}) + 10e^{-10x}, \quad u''(x) = -100e^{-10x}
+  \end{align*}
+  We now see that the solution satisfy the Poisson equation:
+  \begin{align*}
+    -u''(x) = 100e^{-10x} = f(x)
+  \end{align*}
   \subsection{General solution using Gausian elimination}
     Forward / Backward sub
     FLOPS
@@ -63,82 +162,6 @@
 
 
 \section{Part a}
-The solution can be shown be doing the following rewritting of the Poisson equation:
-\begin{align*}
-  -u''(x_i) = f(x_i)
-\end{align*}
-\begin{align*}
-  -\frac{v_{i+1} + 2v_i - v_{i+1}}{h^2} = f(x_i)
-\end{align*}
-\begin{align*}
-  -v_{i-1} + 2v_i - v_{i+1} = h^2f(x_i)
-\end{align*}
-As we try to setup the equation for f($\vec{v}$) for each individual component the matrix A starts to appear.
-\begin{align*}
-      \begin{bmatrix}
-        2 & -1 & 0 & \cdots & 0
-      \end{bmatrix}
-      \begin{bmatrix}
-        v_0 \\
-        \vdots \\
-        v_{n+1}
-      \end{bmatrix}
-= h^2f(x_0)
-\end{align*}
-\begin{align*}
-      \begin{bmatrix}
-        2 & -1 & 0 & \cdots & \cdots & 0 \\
-        -1 & 2 & -1 & 0 & \cdots & \cdots
-      \end{bmatrix}
-      \begin{bmatrix}
-        v_0 \\
-        \vdots \\
-        v_{n+1}
-      \end{bmatrix}
-= h^2
-      \begin{bmatrix}
-        f(x_0) \\
-        f(x_1)
-      \end{bmatrix}
-\end{align*}
-\begin{align*}
-  \vdots
-\end{align*}
-\begin{align*}
-      \begin{bmatrix}
-        2 & -1 & 0 & \cdots & \cdots & 0 \\
-        -1 & 2 & -1 & 0 & \cdots & \cdots \\
-        0 & -1 & 2 & -1 & 0 & \cdots \\
-         & \cdots & \cdots & \cdots & \cdots & \cdots \\
-        0 & \cdots & & -1 & 2 & -1 \\
-        0 & \cdots & & 0 & -1 & 2
-      \end{bmatrix}
-      \begin{bmatrix}
-        v_0 \\
-        \vdots \\
-        v_{n+1}
-      \end{bmatrix}
-= h^2
-      \begin{bmatrix}
-        f(x_0) \\
-        f(x_1) \\
-        \vdots \\
-        f_{n+1}
-      \end{bmatrix}
-\end{align*}
-By using the definition from the assignment description we arrive at the the expression
-\begin{align*}
-  \vec{A}\vec{v} = \vec{\tilde{b}}
-\end{align*}
-We assume that $f(x) = 100e^{-10x}$. The solution is given to be $u(x) = 1 - (1 - e^{-10})x - e^{-10x}$. We can ensure that this is true by inserting it into the Poisson equation. We first find the double derivative of u(x):
-\begin{align*}
-  u'(x) = -(1 - e^{-10}) + 10e^{-10x}, \quad u''(x) = -100e^{-10x}
-\end{align*}
-We now see that the solution satisfy the Poisson equation:
-\begin{align*}
-  -u''(x) = 100e^{-10x} = f(x)
-\end{align*}
-
 
 
 
