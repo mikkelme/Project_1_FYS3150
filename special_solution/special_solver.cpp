@@ -21,7 +21,7 @@ inline double analytic(double x){
 int main(int argc, char *argv[])
 {
   //Read file and exponent from command line
-  int exponent; //Matrix size: exponent x exponent
+  int max_exp; //Matrix size: exponent x exponent
   int a;
   int b;
   int c;
@@ -36,74 +36,76 @@ int main(int argc, char *argv[])
       a = atoi(argv[1]);
       b = atoi(argv[2]);
       c = atoi(argv[3]);
-      exponent = atoi(argv[4]);
+      max_exp = atoi(argv[4]);
+    }
+
+    for (int exponent = 1; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
-      h = 1./n;
-    }
+      h = 1./((double)n - 1.);
+      clock_t start, finish;
+      start = clock();
 
-    //Define arrays
-    double *A = new double [n];   //A = (double*)malloc(n*sizeof(double));
-    double *B = new double [n];   //B = (double*)malloc(n*sizeof(double));
-    double *C = new double [n];   //C = (double*)malloc(n*sizeof(double));
-    A[0] = A[n] = a; // setter første/siste element til a
-    B[0] = B[n] = b;
-    C[0] = C[n] = c;
-
-
-    clock_t start, finish;
-    start = clock();
-
-    double *g = new double [n];
-    double *x = new double [n];
-    for (int i = 0; i < n; i++){
-      x[i] = (i)*h;
-      g[i] = pow(h,2)*f(x[i]);
-    }
-
-    //Forward Sub
-    double *B_tilde = new double [n];
-    double *g_tilde = new double [n];
-    B_tilde[1] = B[1];
-    g_tilde[1] = g[1];
-
-    for (int i = 1; i < n; i++){
-      B_tilde[i] = (i+1.)/(i);}
-    for (int i = 2; i<n;i++){
-      g_tilde[i] = g[i] + g_tilde[i-1]/B_tilde[i-1];
-    }
+      //Define arrays
+      double *A = new double [n];   //A = (double*)malloc(n*sizeof(double));
+      double *B = new double [n];   //B = (double*)malloc(n*sizeof(double));
+      double *C = new double [n];   //C = (double*)malloc(n*sizeof(double));
+      A[0] = A[n] = a; // setter første/siste element til a
+      B[0] = B[n] = b;
+      C[0] = C[n] = c;
 
 
-    //Backwards Sub
-    double *u = new double [n];
-    u[0] = 0.;
-    u[n-1] = 0.;
-    for (int i = n-1; i > 0; i--){
-      u[i] = (g_tilde[i] + u[i+1])/B_tilde[i];
-    }
-    
-    finish = clock();
-    double time =(double)(finish - start)/((double) CLOCKS_PER_SEC);
+      double *g = new double [n];
+      double *x = new double [n];
+      for (int i = 0; i < n; i++){
+        x[i] = (i)*h;
+        g[i] = pow(h,2)*f(x[i]);
+      }
 
-    
-    ofile.open("sp_output_file.txt");
-    ofile << setiosflags(ios::showpoint | ios::uppercase);
-     //      ofile << "       x:             approx:          exact:       relative error" << endl;
-    for (int i = 0; i < n; i++){
-      double RelativeError = fabs((analytic(x[i]) - u[i])/analytic(x[i]));
-      ofile << setw(15) << setprecision(8) << x[i];
-      ofile << setw(15) << setprecision(8) << u[i];
-      ofile << setw(15) << setprecision(8) << analytic(x[i]);
-      ofile << setw(15) << setprecision(8) << log10(RelativeError) << endl;
-    }
-    
-    ofile.close();
+      //Forward Sub
+      double *B_tilde = new double [n];
+      double *g_tilde = new double [n];
+      B_tilde[1] = B[1];
+      g_tilde[1] = g[1];
 
-    //delete [] x; delete [] d; delete [] b; delete [] solution;
+      for (int i = 1; i < n; i++){
+        B_tilde[i] = (i+1.)/(i);}
+      for (int i = 2; i<n;i++){
+        g_tilde[i] = g[i] + g_tilde[i-1]/B_tilde[i-1];
+      }
 
 
-    delete[] A;   //free(A);
-    delete[] B;   //free(B);
-    delete[] C;   //free(C)
-  cout << time*pow(10,6)<<" mu s" <<endl;
+      //Backwards Sub
+      double *v = new double [n];
+      v[0] = 0.;
+      v[n-1] = 0.;
+      for (int i = n-1; i > 0; i--){
+        v[i] = (g_tilde[i] + v[i+1])/B_tilde[i];
+      }
+
+      finish = clock();
+      double time =(double)(finish - start)/((double) CLOCKS_PER_SEC);
+
+
+      string argument = to_string(exponent);
+      string output_file = "output_n";
+      output_file.append(argument);
+      output_file.append(".txt");
+
+      ofile.open(output_file);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+
+       //      ofile << "       x:             approx:          exact:       relative error" << endl;
+      ofile << setw(15) << setprecision(8) << time*pow(10,6)<<" mu s" <<endl;
+      for (int i = 1; i < n-1; i++){
+        double RelativeError = fabs((analytic(x[i]) - v[i])/analytic(x[i]));
+        ofile << setw(15) << setprecision(8) << x[i];
+        ofile << setw(15) << setprecision(8) << v[i];
+        ofile << setw(15) << setprecision(8) << analytic(x[i]);
+        ofile << setw(15) << setprecision(8) << log10(RelativeError) << endl;
+      }
+      ofile.close();
+
+      cout << "n = 10^" <<  exponent << "   time = " << time*pow(10, 6) << " mu s"<< endl;
+  }
   return 0;
 }

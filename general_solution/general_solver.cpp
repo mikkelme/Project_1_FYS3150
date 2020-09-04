@@ -39,27 +39,23 @@ int main(int argc, char *argv[])
       max_exp = atoi(argv[4]);
     }
 
-    for (int exponent = 0; exponent <= max_exp; exponent++){
+    for (int exponent = 1; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
       h = 1./((double)n - 1.);
+      clock_t start, finish;
+      start = clock();
 
       //Define arrays
       double *A = new double [n];   //A = (double*)malloc(n*sizeof(double));
       double *B = new double [n];   //B = (double*)malloc(n*sizeof(double));
       double *C = new double [n];   //C = (double*)malloc(n*sizeof(double));
-      for (int i = 0; i < n; i++){
-        A[i] = a;
-        B[i] = b;
-        C[i] = c;
-      }
-
-      clock_t start, finish;
-      start = clock();
-
       double *g = new double [n];
       double *x = new double [n];
       double hh = h*h;
       for (int i = 0; i < n; i++){
+        A[i] = a;
+        B[i] = b;
+        C[i] = c;
         x[i] = (i)*h;
         g[i] = hh*f(x[i]);
       }
