@@ -59,13 +59,13 @@ int main(int argc, char *argv[])
       vec x(n);  vec g(n);
       double hh = h*h;
 
-
+      n = n-1;
       A(0,0) = b; A(0,1) = c;
       x(0) = h; x(n-1) = (n-1)*h;
       g(0) = hh*f(x(0)); g(n-1) = hh*f(x(n-1));
       //cout << "test" << endl;
       for (int i = 1; i < n-1; i++){
-          x(i) = (i)*h;
+          x(i) = i*h;
           g(i) = hh*f(x(i));
           A(i,i-1)  = a;
           A(i,i)    = b;

@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
     for (int exponent = 1; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
-      h = 1./((double)n - 1.);
+      h = 1./((double)n);
       clock_t start, finish;
       start = clock();
 
