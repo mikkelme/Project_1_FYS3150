@@ -1,0 +1,249 @@
+\documentclass[american,a4paper,12pt]{article}
+\usepackage[T1]{fontenc} %for å bruke æøå
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} %for å inkludere grafikk
+\usepackage{verbatim} %for å inkludere filer med tegn LaTeX ikke liker
+\usepackage{mathpazo}
+\usepackage{algorithm} % for algoritmene e.g paragraf 2.2 Gauss
+\usepackage{algpseudocode} % lager pseudokode til algoritmene
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{multicol}
+\usepackage{siunitx}
+\usepackage{float}
+\usepackage{subcaption}
+
+
+\renewcommand{\vec}[1]{\mathbf{#1}} %ny definisjon av \vec så det blir bold face i stedet for vector-pil.
+
+
+\captionsetup[table]{skip=10pt}
+\bibliographystyle{plain}
+
+\title{Project 1: Computational Physics - FYS3150}
+\author{Fredrik Hoftun \& Mikkel Metzsch Jensen}
+\date{September 09, 2020}
+\begin{document}
+\maketitle
+
+\section{Introduction}
+  In this project we will investegate different approaches to solve the one-dimensional Poisson equation with Dirichlet boundary conditions given as follows:
+  \begin{align*}
+    u''(x) = f(x), \quad x \in (0,1), \quad u(0) = u(1) = 0
+  \end{align*}
+  We will rewrite this as a set of linear equations, and solve it by a number of different computational approaches on either gaussian elimination or LU decomposition. We will solve the equation above with the function:
+  \begin{align*}
+    f(x) = 100e^{-10x}
+  \end{align*}
+  Where the analytical solution then is given as:
+  \begin{align*}
+    u(x) = 1 - (1 - e^{-10})x - e^{-10x}
+  \end{align*}
+  We will use the analytical solution to evaluate the precision of the numerical solutions for different steplength between the discretized gridpoints $x_i$.
+\section{Method}
+  \subsection{Rewritting the equation as a set of linear equations}
+  In order to solve the Poisson equation numerically we discretize u as $v_i$ with grid points $x_i = ih$ in the interval $x \in [x_0 = 0,x_1 = 1]$. We then have the step length $h = 1/(n + 1)$. We use the following second derivative approximation
+  \begin{align*}
+    -u''(x_i) \approx -\frac{v_{i+1} + 2v_i - v_{i+1}}{h^2} =  f(x_i)
+  \end{align*}
+  $\Longleftrightarrow$
+  \begin{align*}
+    -v_{i-1} + 2v_i - v_{i+1} = h^2f(x_i)
+  \end{align*}
+  We define the colum vector $\vec{v} = [v_1, v_2, \hdots, v_{n+1}]$ and try to setup the equation for every step i. As we do this we see a pattern appearing
+  \begin{align*}
+        \begin{bmatrix}
+          2 & -1 & 0 & \cdots & 0
+        \end{bmatrix}
+        \begin{bmatrix}
+          v_0 \\
+          \vdots \\
+          v_{n+1}
+        \end{bmatrix}
+  = h^2f(x_0)
+  \end{align*}
+  \begin{align*}
+        \begin{bmatrix}
+          2 & -1 & 0 & \cdots & \cdots & 0 \\
+          -1 & 2 & -1 & 0 & \cdots & \cdots
+        \end{bmatrix}
+        \begin{bmatrix}
+          v_0 \\
+          \vdots \\
+          v_{n+1}
+        \end{bmatrix}
+  = h^2
+        \begin{bmatrix}
+          f(x_0) \\
+          f(x_1)
+        \end{bmatrix}
+  \end{align*}
+  \begin{align*}
+    \vdots
+  \end{align*}
+  \begin{align*}
+        \begin{bmatrix}
+          2 & -1 & 0 & \cdots & \cdots & 0 \\
+          -1 & 2 & -1 & 0 & \cdots & \cdots \\
+          0 & -1 & 2 & -1 & 0 & \cdots \\
+          \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+          0 & \cdots & & -1 & 2 & -1 \\
+          0 & \cdots & & 0 & -1 & 2
+        \end{bmatrix}
+        \begin{bmatrix}
+          v_0 \\
+          \vdots \\
+          v_{n+1}
+        \end{bmatrix}
+  = h^2
+        \begin{bmatrix}
+          f(x_0) \\
+          f(x_1) \\
+          \vdots \\
+          f_{n+1}
+        \end{bmatrix}
+  \end{align*}
+  From this we see that we can write the problem as a linear set of equation:
+  \begin{align*}
+    \vec{A}\vec{v} = \vec{\tilde{g}}
+  \end{align*}
+  With the following definitions:
+  \begin{align*}
+    \vec{A} =
+    \begin{bmatrix}
+      2 & -1 & 0 & \cdots & \cdots & 0 \\
+      -1 & 2 & -1 & 0 & \cdots & \cdots \\
+      0 & -1 & 2 & -1 & 0 & \cdots \\
+      \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+      0 & \cdots & & -1 & 2 & -1 \\
+      0 & \cdots & & 0 & -1 & 2
+    \end{bmatrix}
+    \quad, \vec{v} =
+    \begin{bmatrix}
+      v_0 \\
+      v_1 \\
+      \vdots \\
+      v_{n+1}
+    \end{bmatrix}
+    \quad, \vec{\tilde{g}} = h^2
+    \begin{bmatrix}
+      f(x_0) \\
+      f(x_1) \\
+      \vdots \\
+      f_{n+1}
+    \end{bmatrix}
+  \end{align*}
+  In this project we use $f(x) = 100e^{-10x}$. The solution for the Poisson equation in this case is given to be $u(x) = 1 - (1 - e^{-10})x - e^{-10x}$. We can ensure that this is true by inserting it and checking that the equarion holds remains true. First find the double derivative of u(x):
+  \begin{align*}
+    u'(x) = -(1 - e^{-10}) + 10e^{-10x}, \quad u''(x) = -100e^{-10x}
+  \end{align*}
+  We now see that the solution satisfy the Poisson equation:
+  \begin{align*}
+    -u''(x) = 100e^{-10x} = f(x)
+  \end{align*}
+  \subsection{General solution using Gausian elimination}
+  We can solve our problem generally using Gaussian elimination on the matrix $\vec{A}\vec{v} = \vec{\tilde{g}}$, where $a_i$ are the elements below the diagonal, $b_i$ are the elements on the diagonal
+
+\begin{algorithm}
+\caption{General algorithm}
+\begin{algorithmic}[1] %fra algpseudocode
+  \For {$i = 2, \dots, n$} \Comment{Forward substitution eliminating $a_i$}
+    \State $b_i = b_i - c_{i-1}\cdot {a_i}/{{b}_{i-1}}$ \Comment{Update ${b}_i$}
+    \State $g_i = g_i - {g}_{i-1}\cdot {a_i}/{{b}_{i-1}}$ \Comment{Update ${g}_i$}
+  \EndFor
+    
+  \Statex 
+  \State $v_n = 0$ \Comment{Backward substitution obtaining $v_i$}
+  \For {$i = n-1, \dots, 1$}
+    \State $v_i = \frac{g_i - c_i\cdot v_{i+1}}{b_i}$
+  \EndFor
+\end{algorithmic}
+\end{algorithm}
+    
+    Forward / Backward sub
+    FLOPS
+\subsection{Simplified problem specific solution}
+In this specific case we have $a = -1,\ b = 2,\ c = -1$ which means we can further simplify our matrix $\vec{A}$:
+\begin{align*}
+    \vec{A} =
+    \begin{bmatrix}
+    2 & -1 & 0 & \cdots & \cdots & 0 \\
+    -1 & 2 & -1 & 0 & \cdots & \cdots \\
+    0 & -1 & 2 & -1 & 0 & \cdots \\
+    \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+    0 & \cdots & & -1 & 2 & -1 \\
+    0 & \cdots & & 0 & -1 & 2
+    \end{bmatrix}
+    \ \sim \ 
+    \begin{bmatrix}
+    2 & -1 & 0 & \cdots & \cdots & 0 \\
+    0 & 3/2 & -1 & 0 & \cdots & \cdots \\
+    0 & -1 & 2 & -1 & 0 & \cdots \\
+    \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+    0 & \cdots & & -1 & 2 & -1 \\
+    0 & \cdots & & 0 & -1 & 2
+    \end{bmatrix}
+\end{align*}
+\begin{align*}
+    \quad \sim
+    \begin{bmatrix}
+    2 & -1 & 0 & \cdots & \cdots & 0 \\
+    0 & 3/2 & -1 & 0 & \cdots & \cdots \\
+    0 & 0 & 4/3 & -1 & 0 & \cdots \\
+    \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+    0 & \cdots & & -1 & 2 & -1 \\
+    0 & \cdots & & 0 & -1 & 2
+    \end{bmatrix}
+    \ \sim \ 
+    \begin{bmatrix}
+    2 & -1 & 0 & \cdots & \cdots & 0 \\
+    0 & 3/2 & -1 & 0 & \cdots & \cdots \\
+    0 & 0 & 4/3 & -1 & 0 & \cdots \\
+    \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+    0 & \cdots & & 0 & i_n/{i_n-1} & -1 \\
+    0 & \cdots & & 0 & 0 & {i_n+1}/i_n
+    \end{bmatrix} \\
+\end{align*}
+Where we have called the last diagonal element $i_n$. We see that $b_i = \frac{i+1}{i}$, reducing the computation time. With our new $b_i$ we can create a new algorithm.
+\begin{algorithm}
+\caption{Special algorithm, where $a_i = -1,\ b_i = 2,\ c_i = -1$}
+\begin{algorithmic}[1]
+  \For {$i = 2, \dots, n$} \Comment{Forward substitution eliminating $a_i$}
+    \State $b_i = {i+1}/i$ \Comment{Update ${b}_i$}
+    \State $g_i = g_i + {g}_{i-1}/{{b}_{i-1}}$ \Comment{Update ${g}_i$}
+  \EndFor
+    
+  \Statex 
+  \State $v_n = 0$ \Comment{Backward substitution obtaining $v_i$}
+  \For {$i = n-1, \dots, 1$}
+    \State $v_i = \frac{g_i + v_{i+1}}{b_i}$
+  \EndFor
+\end{algorithmic}
+\end{algorithm}
+FLOPS
+\subsection{LU decomposition}
+FLOPS
+\subsection{Comparing precision and error}
+
+
+\section{Implementation?}
+\section{Results}
+\section{Concluding remarks}
+
+
+
+
+
+
+
+
+\section{Part a}
+
+
+
+
+
+
+
+
+\end{document}
