@@ -2,10 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Open file
-folder = "LU_decomposition"
+#folder = "LU_decomposition"
 folder = "general_solution"
-folder = "special_solution"
+#folder = "special_solution"
 filename = "output_n2.txt"
+
+#folder = "Code_example_github"
+#filename = "output.txt2"
+
 file = open(folder + "/" + filename, 'r')
 lines = file.readlines()
 
@@ -25,5 +29,13 @@ for i in range(1, n):
 
 print(f"Calculating time: {time} mu s")
 #Plot
-plt.plot(x, rel_err)
+
+plt.subplot(2,1,1)
+plt.plot(x, u, label = "u")
+plt.plot(x,f, label = "f")
+plt.legend()
+
+plt.subplot(2,1,2)
+plt.plot(x, rel_err, label = "rel_err")
+plt.legend()
 plt.show()

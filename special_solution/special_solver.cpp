@@ -27,16 +27,16 @@ int main(int argc, char *argv[])
   int c;
   int n;
   double h;
-    if (argc <= 3) {
+    if (argc <= 1) {
       cout << "Bad Usage: \"" << argv[0] <<
-              "\" reads integers a, b, c and then max power 10^n as command line input" << endl;
+              "\" command-line reads exponent x for integration point n as n = 10^x" << endl;
           exit(1);
     }
     else {
-      a = atoi(argv[1]);
-      b = atoi(argv[2]);
-      c = atoi(argv[3]);
-      max_exp = atoi(argv[4]);
+      a = 1;
+      b = -2;
+      c = 1;
+      max_exp = atoi(argv[1]);
     }
 
     for (int exponent = 1; exponent <= max_exp; exponent++){

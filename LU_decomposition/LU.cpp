@@ -32,46 +32,51 @@ int main(int argc, char *argv[])
   int c;
   int n;
   double h;
-    if (argc <= 3) {
+    if (argc <= 1) {
       cout << "Bad Usage: \"" << argv[0] <<
-              "\" reads integers a, b, c and then max power 10^n as command line input" << endl;
+              "\" command-line reads exponent x for integration point n as n = 10^x" << endl;
           exit(1);
     }
     else {
-      a = atoi(argv[1]);
-      b = atoi(argv[2]);
-      c = atoi(argv[3]);
-      max_exp = atoi(argv[4]);
-
+      a = -1;
+      b = 2;
+      c = -1;
+      max_exp = atoi(argv[1]);
     }
 
     for (int exponent = 1; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
-      h = 1./((double)n - 1.);
-      clock_t start, finish;
-      start = clock();
+      h = 1./((double)n);
+      double hh = h*h;
 
 
 
       //Matrix
+      n = n-1; // shift so end-points are avoided
       mat A = zeros<mat>(n,n);
-
       vec x(n);  vec g(n);
-      double hh = h*h;
 
-      n = n-1;
+
       A(0,0) = b; A(0,1) = c;
-      x(0) = h; x(n-1) = (n-1)*h;
+      x(0) = h; x(n-1) = x(0) + (n-1)*h;
       g(0) = hh*f(x(0)); g(n-1) = hh*f(x(n-1));
       //cout << "test" << endl;
       for (int i = 1; i < n-1; i++){
-          x(i) = i*h;
+          x(i) = x(i-1) + h;
           g(i) = hh*f(x(i));
           A(i,i-1)  = a;
           A(i,i)    = b;
           A(i,i+1)  = c; }
       A(n-1,n-2) = a; A(n-1,n-1) = b; A(n-2,n-1) = c;
+
+
+
+
+      clock_t start, finish;
+      start = clock();
+
       vec v  = solve(A,g);
+
       finish = clock();
       double time =(double)(finish - start)/((double) CLOCKS_PER_SEC);
 

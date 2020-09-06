@@ -27,38 +27,42 @@ int main(int argc, char *argv[])
   int c;
   int n;
   double h;
-    if (argc <= 3) {
+    if (argc <= 1) {
       cout << "Bad Usage: \"" << argv[0] <<
-              "\" reads integers a, b, c and then max power 10^n as command line input" << endl;
+              "\" command-line reads exponent x for integration point n as n = 10^x" << endl;
           exit(1);
     }
     else {
-      a = atoi(argv[1]);
-      b = atoi(argv[2]);
-      c = atoi(argv[3]);
-      max_exp = atoi(argv[4]);
+      a = -1;
+      b = 2;
+      c = -1;
+      max_exp = atoi(argv[1]);
     }
 
     for (int exponent = 1; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
       h = 1./((double)n);
-      clock_t start, finish;
-      start = clock();
+      double hh = h*h;
+
 
       //Define arrays
-      double *A = new double [n];   //A = (double*)malloc(n*sizeof(double));
-      double *B = new double [n];   //B = (double*)malloc(n*sizeof(double));
-      double *C = new double [n];   //C = (double*)malloc(n*sizeof(double));
+      double *A = new double [n];
+      double *B = new double [n];
+      double *C = new double [n];
       double *g = new double [n];
       double *x = new double [n];
-      double hh = h*h;
+      double *v = new double [n]; //Discretized Solution
+
       for (int i = 0; i < n; i++){
         A[i] = a;
         B[i] = b;
         C[i] = c;
-        x[i] = (i)*h;
+        x[i] = i*h;
         g[i] = hh*f(x[i]);
       }
+
+      clock_t start, finish;
+      start = clock();
 
       //Forward Sub
       for (int i = 2; i < n; i++){
@@ -66,12 +70,10 @@ int main(int argc, char *argv[])
         g[i] = g[i] - A[i]*g[i-1]/B[i-1];
       }
 
-
       //Backwards Sub
-      double *v = new double [n];
-      v[0] = 0.;
-      v[n-1] = 0.;
-      for (int i = n-1; i > 0; i--){
+      v[0] = 0.; //v[n-1] = 0.;
+      v[n-1] = g[n-1]/B[n-1];
+      for (int i = n-2; i > 0; i--){
         v[i] = (g[i] - C[i]*v[i+1])/B[i];
       }
       finish = clock();
