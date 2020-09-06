@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
 {
   //Read file and exponent from command line
   int max_exp; //Matrix size: exponent x exponent
+  double max_err;
   int a;
   int b;
   int c;
@@ -42,8 +43,10 @@ int main(int argc, char *argv[])
     for (int exponent = 1; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
       h = 1./((double)n);
-      clock_t start, finish;
-      start = clock();
+      max_err = - pow(10, 7);
+
+
+
 
       //Define arrays
       double *A = new double [n];   //A = (double*)malloc(n*sizeof(double));
@@ -60,6 +63,9 @@ int main(int argc, char *argv[])
         x[i] = (i)*h;
         g[i] = pow(h,2)*f(x[i]);
       }
+
+      clock_t start, finish;
+      start = clock();
 
       //Forward Sub
       double *B_tilde = new double [n];
@@ -85,7 +91,49 @@ int main(int argc, char *argv[])
       finish = clock();
       double time =(double)(finish - start)/((double) CLOCKS_PER_SEC);
 
+      //Output
+      string argument = to_string(exponent);
+      if (exponent <= 4){
+        string output_file = "output_n";
+        output_file.append(argument);
+        output_file.append(".txt");
+        ofile.open(output_file);
+        ofile << setiosflags(ios::showpoint | ios::uppercase);
+         //      ofile << "       x:             approx:          exact:       relative error" << endl;
+        ofile << setw(15) << setprecision(8) << time*pow(10,6)<<" mu s" <<endl;
+        for (int i = 1; i < n-1; i++){
+          double RelativeError = log10(fabs((analytic(x[i]) - v[i])/analytic(x[i])));
+          if (RelativeError > max_err){
+            max_err = RelativeError;}
+          ofile << setw(15) << setprecision(8) << x[i];
+          ofile << setw(15) << setprecision(8) << v[i];
+          ofile << setw(15) << setprecision(8) << analytic(x[i]);
+          ofile << setw(15) << setprecision(8) << RelativeError << endl;
+        }
+        ofile.close();
+        cout << "n = 10^" <<  exponent << "   time = " << time*pow(10, 6) << " mu s   max_err "<< max_err << endl;
+      }
 
+      if (exponent > 4){
+        for (int i = 1; i < n-1; i++){
+          double RelativeError = log10(fabs((analytic(x[i]) - v[i])/analytic(x[i])));
+          if (RelativeError > max_err){
+            max_err = RelativeError;}
+        }
+      cout << "n = 10^" <<  exponent << "   time = " << time*pow(10, 6) << " mu s   max_err "<< max_err << endl;
+      }
+
+      string output_file_err = "max_err_n";
+      output_file_err.append(argument);
+      ofile.open(output_file_err);
+      ofile << setiosflags(ios::showpoint | ios::uppercase);
+      ofile << setw(15) << setprecision(8) << max_err;
+      ofile.close();
+
+
+
+
+      /*
       string argument = to_string(exponent);
       string output_file = "output_n";
       output_file.append(argument);
@@ -106,6 +154,7 @@ int main(int argc, char *argv[])
       ofile.close();
 
       cout << "n = 10^" <<  exponent << "   time = " << time*pow(10, 6) << " mu s"<< endl;
+      */
   }
   return 0;
 }
