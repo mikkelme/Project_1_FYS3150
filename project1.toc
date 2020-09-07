@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}% 
+\contentsline {section}{\numberline {2}Method}{2}{section.2}% 
+\contentsline {subsection}{\numberline {2.1}defining the problem}{2}{subsection.2.1}% 
+\contentsline {subsection}{\numberline {2.2}Rewritting the problem as a set of linear equations}{2}{subsection.2.2}% 
+\contentsline {subsection}{\numberline {2.3}General solution using Gausian elimination}{4}{subsection.2.3}% 
+\contentsline {subsection}{\numberline {2.4}Simplified problem specific solution}{5}{subsection.2.4}% 
+\contentsline {subsection}{\numberline {2.5}LU decomposition}{6}{subsection.2.5}% 
+\contentsline {subsection}{\numberline {2.6}Comparing precision and error}{6}{subsection.2.6}% 
+\contentsline {subsection}{\numberline {2.7}Implementation}{6}{subsection.2.7}% 
+\contentsline {section}{\numberline {3}Results}{6}{section.3}% 
+\contentsline {subsection}{\numberline {3.1}General algorithm}{8}{subsection.3.1}% 
+\contentsline {subsection}{\numberline {3.2}Special algorithm}{8}{subsection.3.2}% 
+\contentsline {subsection}{\numberline {3.3}LU decomposition}{8}{subsection.3.3}% 
+\contentsline {section}{\numberline {4}Discussion}{8}{section.4}% 
+\contentsline {section}{\numberline {5}Conclusion}{8}{section.5}% 
+\contentsline {section}{\numberline {6}References}{8}{section.6}% 

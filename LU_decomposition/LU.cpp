@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
           ofile << setw(15) << setprecision(8) << RelativeError << endl;
         }
         ofile.close();
-        cout << "n = 10^" <<  exponent << "   time = " << time*pow(10, 6) << " mu s   max_err "<< max_err << endl;
+        cout << "n = 10^" <<  exponent << "   time = " << time << "   max_err "<< max_err << endl;
       }
 
       if (exponent > 4){
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
           if (RelativeError > max_err){
             max_err = RelativeError;}
         }
-      cout << "n = 10^" <<  exponent << "   time = " << time*pow(10, 6) << " mu s   max_err "<< max_err << endl;
+      cout << "n = 10^" <<  exponent << "   time = " << time << "   max_err "<< max_err << endl;
       }
 
       string output_file_err = "max_err_n";

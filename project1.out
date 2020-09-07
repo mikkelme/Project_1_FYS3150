@@ -1,0 +1,16 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Method}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{defining the problem}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Rewritting the problem as a set of linear equations}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{General solution using Gausian elimination}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Simplified problem specific solution}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{LU decomposition}{section.2}% 7
+\BOOKMARK [2][-]{subsection.2.6}{Comparing precision and error}{section.2}% 8
+\BOOKMARK [2][-]{subsection.2.7}{Implementation}{section.2}% 9
+\BOOKMARK [1][-]{section.3}{Results}{}% 10
+\BOOKMARK [2][-]{subsection.3.1}{General algorithm}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.2}{Special algorithm}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.3}{LU decomposition}{section.3}% 13
+\BOOKMARK [1][-]{section.4}{Discussion}{}% 14
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 15
+\BOOKMARK [1][-]{section.6}{References}{}% 16
