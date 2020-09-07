@@ -18,6 +18,7 @@
     linkcolor=black,
     filecolor=magenta,
     urlcolor=blue,
+    citecolor=blue
     pdftitle={Project 1: Computational Physics - FYS3150},
     pdfpagemode=FullScreen
 }
@@ -46,6 +47,7 @@
 \end{abstract}
 
 \section{Introduction}
+  In this project we will investegate different numerical approaches for the solving of the one-dimensional Poisson equation with Dirichlet boundary conditions. This is a problem that is used in many different scientiffic applications. It is used to describe electrostatic and megnetostatic phenonema in a quantitative maner. It is also helps to understand diffusion and propagation problems. The solution is generally used in a wide range of fields such as engineering, physics, mathematics, biology, chemistry, etc. \cite{poisson_paper}. In this project we have used a second derivative approximation in order to rewrite the problem as a set of linear equations. We have written three different algorithms: A general and a specialiazed algorithm using gaussian elimination and then LU demposition. Theese are described individually in the method sections along with a calculation of the number of floating point operation for each of them. Since we know the analytical solution for our problem we have compaired relative error for different choices of stepsize $h$ in the algorithm. We have also compaired of the CPU time of theese computationg. We found a significant difference in both precesion (due to round of erros) and CPU time, which are presented in the results section.
 
   \begin{enumerate}
     \item Motivate the reader
@@ -55,126 +57,124 @@
   \end{enumerate}
 
 
-  In this project we will investegate different approaches to solve the one-dimensional Poisson equation with Dirichlet boundary conditions given as follows:
-  \begin{align*}
-    u''(x) = f(x), \quad x \in (0,1), \quad u(0) = u(1) = 0
-  \end{align*}
-  We will rewrite this as a set of linear equations, and solve it by a number of different computational approaches on either gaussian elimination or LU decomposition. We will solve the equation above with the function:
-  \begin{align*}
-    f(x) = 100e^{-10x}
-  \end{align*}
-  Where the analytical solution then is given as:
-  \begin{align*}
-    u(x) = 1 - (1 - e^{-10})x - e^{-10x}
-  \end{align*}
-  We will use the analytical solution to evaluate the precision of the numerical solutions for different steplength between the discretized gridpoints $x_i$.
+
 
 
 \section{Method}
-   Show test and example og code somewhere in method. Show that your code works before showing results later.
-  \subsection{defining the problem}
-
+  \subsection{Defining the problem}
+    We are going to solve the one-dimensional Poisson equation with Dirichlet boundary conditions given as the following:
+    \begin{align*}
+      u''(x) = f(x), \quad x \in (0,1), \quad u(0) = u(1) = 0
+    \end{align*}
+    In our case we will provide the function:
+    \begin{align*}
+      f(x) = 100e^{-10x}
+    \end{align*}
+    Note that the algorithms for solving this problem will not be depedent on this specefic choice of f(x). The reason why we stick to this function is because we have the following analytical solution for f(x):
+    \begin{align*}
+      u(x) = 1 - (1 - e^{-10})x - e^{-10x}
+    \end{align*}
+    We will use this analytical solution to evaluate the precision of the numerical solutions for different choices of steplength $h$ between the discretized gridpoints $x_i$.
   \subsection{Rewritting the problem as a set of linear equations}
-  In order to solve the Poisson equation numerically we discretize u as $v_i$ with grid points $x_i = ih$ in the interval $x \in [x_0 = 0,x_1 = 1]$. We then have the step length $h = 1/(n + 1)$. We use the following second derivative approximation
-  \begin{align*}
-    -u''(x_i) \approx -\frac{v_{i+1} + 2v_i - v_{i+1}}{h^2} =  f(x_i)
-  \end{align*}
-  $\Longleftrightarrow$
-  \begin{align*}
-    -v_{i-1} + 2v_i - v_{i+1} = h^2f(x_i)
-  \end{align*}
-  We define the colum vector $\vec{v} = [v_1, v_2, \hdots, v_{n+1}]$ and try to setup the equation for every step i. As we do this we see a pattern appearing
-  \begin{align*}
-        \begin{bmatrix}
-          2 & -1 & 0 & \cdots & 0
-        \end{bmatrix}
-        \begin{bmatrix}
-          v_0 \\
-          \vdots \\
-          v_{n+1}
-        \end{bmatrix}
-  = h^2f(x_0)
-  \end{align*}
-  \begin{align*}
-        \begin{bmatrix}
-          2 & -1 & 0 & \cdots & \cdots & 0 \\
-          -1 & 2 & -1 & 0 & \cdots & \cdots
-        \end{bmatrix}
-        \begin{bmatrix}
-          v_0 \\
-          \vdots \\
-          v_{n+1}
-        \end{bmatrix}
-  = h^2
-        \begin{bmatrix}
-          f(x_0) \\
-          f(x_1)
-        \end{bmatrix}
-  \end{align*}
-  \begin{align*}
-    \vdots
-  \end{align*}
-  \begin{align*}
-        \begin{bmatrix}
-          2 & -1 & 0 & \cdots & \cdots & 0 \\
-          -1 & 2 & -1 & 0 & \cdots & \cdots \\
-          0 & -1 & 2 & -1 & 0 & \cdots \\
-          \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
-          0 & \cdots & & -1 & 2 & -1 \\
-          0 & \cdots & & 0 & -1 & 2
-        \end{bmatrix}
-        \begin{bmatrix}
-          v_0 \\
-          \vdots \\
-          v_{n+1}
-        \end{bmatrix}
-  = h^2
-        \begin{bmatrix}
-          f(x_0) \\
-          f(x_1) \\
-          \vdots \\
-          f_{n+1}
-        \end{bmatrix}
-  \end{align*}
-  From this we see that we can write the problem as a linear set of equation:
-  \begin{align*}
-    \vec{A}\vec{v} = \vec{g}
-  \end{align*}
-  With the following definitions:
-  \begin{align*}
-    \vec{A} =
-    \begin{bmatrix}
-      2 & -1 & 0 & \cdots & \cdots & 0 \\
-      -1 & 2 & -1 & 0 & \cdots & \cdots \\
-      0 & -1 & 2 & -1 & 0 & \cdots \\
-      \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
-      0 & \cdots & & -1 & 2 & -1 \\
-      0 & \cdots & & 0 & -1 & 2
-    \end{bmatrix}
-    \quad, \vec{v} =
-    \begin{bmatrix}
-      v_0 \\
-      v_1 \\
-      \vdots \\
-      v_{n+1}
-    \end{bmatrix}
-    \quad, \vec{\tilde{g}} = h^2
-    \begin{bmatrix}
-      f(x_0) \\
-      f(x_1) \\
-      \vdots \\
-      f_{n+1}
-    \end{bmatrix}
-  \end{align*}
-  In this project we use $f(x) = 100e^{-10x}$. The solution for the Poisson equation in this case is given to be $u(x) = 1 - (1 - e^{-10})x - e^{-10x}$. We can ensure that this is true by inserting it and checking that the equarion holds remains true. First find the double derivative of u(x):
-  \begin{align*}
-    u'(x) = -(1 - e^{-10}) + 10e^{-10x}, \quad u''(x) = -100e^{-10x}
-  \end{align*}
-  We now see that the solution satisfy the Poisson equation:
-  \begin{align*}
-    -u''(x) = 100e^{-10x} = f(x)
-  \end{align*}
-
+    In order to solve the Poisson equation numerically we discretize u as $v_i$ with grid points $x_i = ih$ in the interval $x \in [x_0 = 0,x_1 = 1]$. We then have the step length $h = 1/(n + 1)$. We use the following second derivative approximation
+    \begin{align*}
+      -u''(x_i) \approx -\frac{v_{i+1} + 2v_i - v_{i+1}}{h^2} =  f(x_i)
+    \end{align*}
+    $\Longleftrightarrow$
+    \begin{align*}
+      -v_{i-1} + 2v_i - v_{i+1} = h^2f(x_i)
+    \end{align*}
+    We define the colum vector $\vec{v} = [v_1, v_2, \hdots, v_{n+1}]$ and try to setup the equation for every step i. As we do this we see a pattern appearing
+    \begin{align*}
+          \begin{bmatrix}
+            2 & -1 & 0 & \cdots & 0
+          \end{bmatrix}
+          \begin{bmatrix}
+            v_0 \\
+            \vdots \\
+            v_{n+1}
+          \end{bmatrix}
+    = h^2f(x_0)
+    \end{align*}
+    \begin{align*}
+          \begin{bmatrix}
+            2 & -1 & 0 & \cdots & \cdots & 0 \\
+            -1 & 2 & -1 & 0 & \cdots & \cdots
+          \end{bmatrix}
+          \begin{bmatrix}
+            v_0 \\
+            \vdots \\
+            v_{n+1}
+          \end{bmatrix}
+    = h^2
+          \begin{bmatrix}
+            f(x_0) \\
+            f(x_1)
+          \end{bmatrix}
+    \end{align*}
+    \begin{align*}
+      \vdots
+    \end{align*}
+    \begin{align*}
+          \begin{bmatrix}
+            2 & -1 & 0 & \cdots & \cdots & 0 \\
+            -1 & 2 & -1 & 0 & \cdots & \cdots \\
+            0 & -1 & 2 & -1 & 0 & \cdots \\
+            \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+            0 & \cdots & & -1 & 2 & -1 \\
+            0 & \cdots & & 0 & -1 & 2
+          \end{bmatrix}
+          \begin{bmatrix}
+            v_0 \\
+            \vdots \\
+            v_{n+1}
+          \end{bmatrix}
+    = h^2
+          \begin{bmatrix}
+            f(x_0) \\
+            f(x_1) \\
+            \vdots \\
+            f_{n+1}
+          \end{bmatrix}
+    \end{align*}
+    From this we see that we can write the problem as a linear set of equation:
+    \begin{align*}
+      \vec{A}\vec{v} = \vec{g}
+    \end{align*}
+    With the following definitions:
+    \begin{align*}
+      \vec{A} =
+      \begin{bmatrix}
+        2 & -1 & 0 & \cdots & \cdots & 0 \\
+        -1 & 2 & -1 & 0 & \cdots & \cdots \\
+        0 & -1 & 2 & -1 & 0 & \cdots \\
+        \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+        0 & \cdots & & -1 & 2 & -1 \\
+        0 & \cdots & & 0 & -1 & 2
+      \end{bmatrix}
+      \quad, \vec{v} =
+      \begin{bmatrix}
+        v_0 \\
+        v_1 \\
+        \vdots \\
+        v_{n+1}
+      \end{bmatrix}
+      \quad, \vec{\tilde{g}} = h^2
+      \begin{bmatrix}
+        f(x_0) \\
+        f(x_1) \\
+        \vdots \\
+        f_{n+1}
+      \end{bmatrix}
+    \end{align*}
+    In this project we use $f(x) = 100e^{-10x}$. The solution for the Poisson equation in this case is given to be $u(x) = 1 - (1 - e^{-10})x - e^{-10x}$. We can ensure that this is true by inserting it and checking that the equarion holds remains true. First find the double derivative of u(x):
+    \begin{align*}
+      u'(x) = -(1 - e^{-10}) + 10e^{-10x}, \quad u''(x) = -100e^{-10x}
+    \end{align*}
+    We now see that the solution satisfy the Poisson equation:
+    \begin{align*}
+      -u''(x) = 100e^{-10x} = f(x)
+    \end{align*}
 \subsection{General solution using Gausian elimination}
 Do Gaussial elimination... (or not)\\
 We can solve our problem generally using Gaussian elimination on the matrix $\vec{A}\vec{v} = \vec{g}$, where $a_i$ are the elements below the diagonal, $b_i$ are the elements on the diagonal and $c_i$ are the elements above the diagonal.
@@ -263,7 +263,11 @@ Similarly to the general algorithm we can calculate total FLOPS:
 \begin{center}
     $(2*2+2)(n-2)+1 = 6n-11$
 \end{center}
-Which for large $n$ is considerably less.
+Which for large $n$ is considerably less. If we take into a account that $b_i = \frac{i+1}{i}$ can be precalculated for all $i \in [1, \hdots, n]$ before hand, we get a total number of FP:
+\begin{align*}
+  (2 + 2)(n-2) = 4n - 8
+\end{align*}
+which for large n can be approximated to $4n$
 \subsection{LU decomposition}
 For the LU decomposition we ...\\
 FLOPS $O(n^3)$ se \url{https://en.wikipedia.org/wiki/LU_decomposition}, søk etter "float"
@@ -324,7 +328,9 @@ In this report we have used three different ways of computing $\vec{A}\vec{v} = 
 \section{References} %
 
 \begin{thebibliography}{9}
-\bibitem{github} Test
+\bibitem{poisson_paper} S. B. Gueye, K. Talla and C. Mbow, "Solution of 1d poisson equation with neumann-dirichlet and dirichlet-neumann boundary conditions using the finite difference method", Journal of Electromagnetic Analysis and Applications, Vol. 6, No. 10, pp. 309, 2014.
+
+
 
 
 
