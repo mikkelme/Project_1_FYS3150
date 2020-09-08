@@ -291,8 +291,16 @@ For large n this can be approximated to $4n$.
 \\
 PLOT OR EXAMPLE OF CODE WORKING?
 \subsection{LU decomposition}
-For the LU decomposition we ...\\
-FLOPS $O(n^3)$ se \url{https://en.wikipedia.org/wiki/LU_decomposition}, søk etter "float"
+For the LU decomposition we have our triangular matrix $\vec{A}$ which can be divided into two invertible matrices, consisting of one upper triangular matrix $\vec{U}$ and one lower triangular matrix $\vec{L}$. We then get the LU decomposition:
+\begin{align*}
+    \vec{Av} &= \vec{g} = \vec{LUv}\\
+    \vec{Uv} &= \vec{L^{-1}g = \vec{w}}
+\end{align*}
+The Armadillo library for \verb!C++! allows for easy computation of the matrices.\\
+Her kommer noe om FLOPS
+
+\subsubsection*{Proof that L or U is invertible}
+A matrix is invertible if the determinant is not equal to zero; $\det A \neq 0$. A property of triangular matrices is that the determinant is the product of the values on the diagonal. In our case we have non-zero real numbers so the matrices are invertible.
 
 \subsection{Comparing precision and error}
 In order to compare the precesion of the different solutions we will use the relative error between the numerical solution ($v_i$) and the analytical solution (($f(x_i)$). For practical reasons we will use the take the logarithm (base 10) so the relative error is given as
@@ -364,9 +372,6 @@ We see that there are some room up the maximum capacity of the processor (2.5 GH
 \section{Conclusion}
 In this report we have used three different ways of computing $\vec{A}\vec{v} = \vec{g}$ and have seen that efficiency of the methods vary greatly. We have witnessed the importance of efficient implementation of algorithms ...
 
-%\section{Acknowledgements}
-
-\section{References} %
 
 \begin{thebibliography}{9}
   \bibitem{poisson_paper} S. B. Gueye, K. Talla and C. Mbow, "Solution of 1d poisson equation with neumann-dirichlet and dirichlet-neumann boundary conditions using the finite difference method", Journal of Electromagnetic Analysis and Applications, Vol. 6, No. 10, pp. 309, 2014.
