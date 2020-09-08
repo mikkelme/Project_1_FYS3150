@@ -34,14 +34,18 @@
 \begin{document}
 \maketitle
 
-\tableofcontents
-
-
 \begin{abstract}
-  The goal of this project were to... \\
-  What did we do? \\
-  What did we find? \\
+  In this project we have looked at three different numerical algorithms that solve the one-dimensional Poisson equation with Dirichlet boundary conditions in matrix form. The first one was a general algorithm using Gaussian elimination, the second was more specialised where we inserted specific array values to shorten the computation time. The third algorithm was a LU decomposition of the matrix. We found that the first two algorithms performed similarly, while the LU decomposition used considerably more time. That was because of the number of FLOPS in the algorithms. The general, special, and LU decomposition had respectfully FLOPS in the order of $\mathcal{O}(9n)$, $\mathcal{O}(4n)$ and $\mathcal{O}(2/3\ n^3)$. All three algorithms had good values with a relative error of $\epsilon = 10^{-7.08}$ where the step-size was $h=10^{-4}$.
+  %The goal of this project were to... \\
+  %What did we do? \\
+  %What did we find? \\
 \end{abstract}
+\vfill
+\footnotesize{{Link to our GitHub repository: \url{https://github.com/mikkelme/Project_1_FYS3150}}} \newpage
+
+\tableofcontents
+\newpage
+
 
 \section{Introduction}
   In this project we will investegate different numerical approaches for the solving of the one-dimensional Poisson equation with Dirichlet boundary conditions. This is a problem that is used in many different scientiffic applications. It is used to describe electrostatic and megnetostatic phenonema in a quantitative maner. It is also helps to understand diffusion and propagation problems. The solution is generally used in a wide range of fields such as engineering, physics, mathematics, biology, chemistry, etc. \cite{poisson_paper}. In this project we have used a second derivative approximation in order to rewrite the problem as a set of linear equations. We have written three different algorithms: A general and a specialiazed algorithm using gaussian elimination and then LU demposition. Theese are described individually in the method sections along with a calculation of the number of floating point operation for each of them. Since we know the analytical solution for our problem we have compaired relative error for different choices of stepsize $h$ in the algorithm. We have also compaired of the CPU time of theese computationg. We found a significant difference in both precesion (due to round of erros) and CPU time, which are presented in the results section.
@@ -290,11 +294,11 @@ For the LU decomposition we have our triangular matrix $\vec{A}$ which can be di
     \vec{Av} &= \vec{g} = \vec{LUv}\\
     \vec{Uv} &= \vec{L^{-1}g = \vec{w}}
 \end{align*}
-The Armadillo library for \verb!C++! allows for easy computation of the matrices.\\
-Her kommer noe om FLOPS
+The Armadillo \cite{Armadillo} library for \verb!C++! allows for easy computation of the matrices.\\
+The LU decomposition uses $\mathcal{O}(2/3\ n^3)$ FLOPS for the computation, making it much heavier than the general and special algorithms.
 
 \subsubsection*{Proof that L or U is invertible}
-A matrix is invertible if the determinant is not equal to zero; $\det A \neq 0$. A property of triangular matrices is that the determinant is the product of the values on the diagonal. In our case we have non-zero real numbers so the matrices are invertible.
+A matrix is invertible if the determinant is not equal to zero; $\det A \neq 0$. A property of triangular matrices is that the determinant is the product of the values on the diagonal. In our case we have non-zero real numbers so the matrices are invertible. COMMENT ON MEMORY USE?
 
 \subsection{Comparing precision and time}
 In order to compare the precesion of the different solutions we will use the relative error between the numerical solution ($v_i$) and the analytical solution (($f(x_i)$). For practical reasons we will use the take the logarithm (base 10) so the relative error is given as
@@ -343,12 +347,11 @@ Regarding the development of the maximum relative error (show in figure \ref{fig
 \begin{align*}
   \epsilon = \mathcal{O}(h^2)
 \end{align*}
-From the results we also see that the linear trend is broken at some point given us a point of minimum error. Since we were not able to go lower than $h = \num{-4}$ for the LU decomposition we can only compare the general and special algorithm here. In this case we see in both cases that the linear trend is broken around $h = \num{-5}$. For the general algorithm this happens quite drastically leavning us with a minimum (maximum) relative error of -8.84. For the special algorithm the error keeps decreasing all the way down to -10.18 at $h = \num{-6}$. This loss of precision happens due to round-off erros when handling to small increaments $h$. In the case of the special algorithm we see that the simplified calculations make us able to archieve higher precesion. Not only is this more efficient in relation to computer processing needed but also in maximum precesion that are able to archive. If we had to extract the most reliable solution from this problem we should choose the special algorithm with $h = \num{-6}$. Note that this might not be the precise minimum point, and we could still very $h$ in even smaller increaments to check for lower relative error. \\
-Regarding the CPU time we got some mixed results. Waiting to see if FREDRIK fixes better data. 
+From the results we also see that the linear trend is broken at some point given us a point of minimum error. Since we were not able to go lower than $h = \num{-4}$ for the LU decomposition we can only compare the general and special algorithm here. In this case we see in both cases that the linear trend is broken around $h = \num{-5}$. For the general algorithm this happens quite drastically leavning us with a minimum (maximum) relative error of -8.84. For the special algorithm the error keeps decreasing all the way down to -10.18 at $h = \num{-6}$. This loss of precision happens due to round-off erros when handling to small increaments $h$. In the case of the special algorithm we see that the simplified calculations make us able to archieve higher precesion. Not only is this more efficient in relation to computer processing needed but also in maximum precesion that are able to archive. If we had to extract the most reliable solution from this problem we should choose the special algorithm with $h = \num{-6}$. Note that this might not be the precise minimum point, and we could still vary $h$ in even smaller increaments to check for lower relative error. \\
+Regarding the CPU time we got some mixed results. Waiting to see if FREDRIK fixes better data.
+%It is possible in Unix systems to run scripts in for loops. Use the command \emph{for i in \{1..N\}; do %PATH; done > filename.txt} e.g. for a file general in the directory general\_solution do with N = 10 and %$10^n$ = 4\ do: \emph{for i in \{1..10\};do ./general\_solution/general 4; done > filename.txt}. This %will run the file general 10 times with n = 4.
 
-
-
-
+\\ \\
 The computer should be able to make a maximum of $\num2.5e9$ floating point operations pr. second. We can inevestegate the number of FLOPS for the general algorithm with $n = \num{e7}$:
 \begin{center}
   $FP = \num{9e7} - 17 \approx \num{9e7}$
@@ -362,20 +365,20 @@ The computer should be able to make a maximum of $\num2.5e9$ floating point oper
 We see that there are some room up the maximum capacity of the processor (2.5 GHz), but this might be somewhat expectable
 
 \section{Conclusion}
-In this report we have used three different ways of computing $\vec{A}\vec{v} = \vec{g}$ and have seen that efficiency of the methods vary greatly. We have witnessed the importance of efficient implementation of algorithms ...
+In this report we have used three different ways of solving the one-dimensional Poisson equation with Dirichlet boundary conditions in matrix form and have seen that efficiency of the methods vary greatly. The general and special algorithms were comparable in computation time at $t_g = A$ and $t_s = B$ for a $10^n$ sized matrix $\vec{A}$, while the LU decomposition lagged greatly behind at $t_{LU} = C$. The difference in computation time was caused by the number of FLOPS in the different algorithms INSERT NUMBER OF FLOPS. We found that the most precise algorithm was the special one, to no ones surprise, which accurately displayed the most correct values down to a step-size of $h = \log_{10}10^{-6}=-6$. The general algorithm deviated around step-size $h=-5$. We didn't test the LU decomposition with smaller step-sizes than $h=-4$, as it would use too much memory, and take too long time, but at least it displayed accurate values.\\ MAYBE SOMETHING LIKE THIS?  We have learned the importance of choosing the correct algorithm, and that specialising it will make for more efficient and accurate code. We have learned to implement the Poisson equation in \verb!C++!.
 
 
 \begin{thebibliography}{9}
   \bibitem{poisson_paper} S. B. Gueye, K. Talla and C. Mbow, "Solution of 1d poisson equation with neumann-dirichlet and dirichlet-neumann boundary conditions using the finite difference method", Journal of Electromagnetic Analysis and Applications, Vol. 6, No. 10, pp. 309, 2014.
 
   \bibitem{linalg} Hjort-Jensen, M., 2018. Computational Physics Lectures: Linear Algebra methods,  accesable at course github repository. \url{http://compphysics.github.io/ComputationalPhysics/doc/pub/linalg/pdf/linalg-print.pdf}
-
-
-
-
+  
+  \bibitem{Armadillo} Armadillo's website: \url{http://arma.sourceforge.net/}
 
 
 
 \end{thebibliography}
+\section*{Appendix}
+GitHub repository: \url{https://github.com/mikkelme/Project_1_FYS3150}
 
 \end{document}
