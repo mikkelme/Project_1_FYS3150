@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     }
 
     for (int exponent = 1; exponent <= max_exp; exponent++){
-      n = pow(10, exponent);
+      n = pow(10, exponent) - 1;
       h = 1./((double)n + 1);
       double hh = h*h;
       max_err = - pow(10, 7);
