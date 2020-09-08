@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     }
 
     for (int exponent = 1; exponent <= max_exp; exponent++){
-      n = pow(10, exponent);
+      n = pow(10, exponent) - 1;
       h = 1./((double)n + 1);
       double hh = h*h;
       max_err = - pow(10, 7);
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
       }
 
       //Backwards Sub
-      //v[0] = 0.; //v[n-1] = 0.;
+      v[0] = v[n+1] = 0;
       v[n] = g[n]/B[n];
       for (int i = n-1; i > 0; i--){
         v[i] = (g[i] - C[i]*v[i+1])/B[i];
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
         ofile << setiosflags(ios::showpoint | ios::uppercase);
          //      ofile << "       x:             approx:          exact:       relative error" << endl;
         ofile << setw(15) << setprecision(8) << time*pow(10,6)<<" mu s" <<endl;
-        for (int i = 1; i < n-1; i++){
+        for (int i = 1; i < n+1; i++){
           double RelativeError = log10(fabs((analytic(x[i]) - v[i])/analytic(x[i])));
           if (RelativeError > max_err){
             max_err = RelativeError;}
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
       }
 
       if (exponent > 4){
-        for (int i = 1; i < n-1; i++){
+        for (int i = 1; i < n+1; i++){
           double RelativeError = log10(fabs((analytic(x[i]) - v[i])/analytic(x[i])));
           if (RelativeError > max_err){
             max_err = RelativeError;}

@@ -197,19 +197,29 @@ We can solve our set of linear equations using Gaussian elimination on the matri
     \State $g_i = g_i - {g}_{i-1}\cdot {a_i}/{{b}_{i-1}}$ \Comment{Update ${g}_i$}
   \EndFor
   \Statex
-  \State $v_n = g_n/B_n;$ \Comment{Backward substitution obtaining $v_i$}
+  \State $v_0 = v_{n+1} = 0$ \Comment{Backward substitution obtaining $v_i$}
+  \State $v_n = g_n/B_n;$
   \For {$i = n-1, \dots, 1$}
     \State $v_i = (g_i - c_i\cdot v_{i+1})/b_i$ % \frac{g_i - c_i\cdot v_{i+1}}{b_i}$
   \EndFor
 \end{algorithmic}
 \end{algorithm}
+By running this algorithm for decreasing step length we se that the numerical solution aproaches the analytical quite fast (see figure \ref{fig:general_ex})
+\begin{figure}[H]
+\begin{center}
+  \includegraphics[width = \textwidth]{figures/general_algo_example.eps} \\
+  \caption{The figure shows the analytical solution and the numerical solution using the generel algorithm for $h = 0.1$ and $h = 0.01$ respectively. We see that the numerical solution lines up with the analytical solution already for $h = 0.01$.}
+  \label{fig:general_ex}
+  \end{center}
+\end{figure}
 We can calculate the algorithms number of Floating Point Operations. In our forward substitution we have $2 \cdot 3$ operations for each loop which runs for a total of n-1 times. In the backward substitution we have a single leading operation and then 3 operations which loops for a total of n-1. The total number of operations is then
 \begin{align*}
   (6 + 3)(n - 1) + 1 = 9n - 8
 \end{align*}
-For large n we can approximate this as 9n. 
+For large n we can approximate this as 9n.
 \subsection{Simplified specific solution}
-In this specific case we have $a = -1,\ b = 2,\ c = -1$ which means we can further simplify our matrix $\vec{A}$:
+Since we have fixed value $a = -1,\ b = 2,\ c = -1$ for the matrix A introduced in previous section, we can simplify our algorithm even more. Now we can do the forward substitution before hand:
+ $\vec{A}$:
 \begin{align*}
     \vec{A} =
     \begin{bmatrix}
@@ -250,15 +260,22 @@ In this specific case we have $a = -1,\ b = 2,\ c = -1$ which means we can furth
     0 & \cdots & & 0 & 0 & {i_n+1}/i_n
     \end{bmatrix} \\
 \end{align*}
-Where we have called the last diagonal element $i_n$. We see that $b_i = \frac{i+1}{i}$, reducing the computation time. With our new $b_i$ we can create a new algorithm.
-\begin{algorithm}
+We see that the updated diagonal element $b_i$ follows the formula:
+\begin{align*}
+   b_i = \frac{i+1}{i}
+\end{align*}
+This means that the update of the diagonal element now use 2 floating point operations per n in where the general one used 3 per n. But the most important fact is that this can be precalculated and in practice excluded from the algorithm. We can therefore justify not to count theese floating point operations. The update of $g_i$ with known values for a, b and c simplifies to:
+\begin{align*}
+  g_i = g_i + g_{i-1}/{b_{i-1}}
+\end{align*}
+\cite{linalg}. This gives us the following simplified algorithm:
+\begin{algorithm}[H]
 \caption{Special algorithm, where $a_i = -1,\ b_i = 2,\ c_i = -1$}
 \begin{algorithmic}[1]
   \For {$i = 2, \dots, n$} \Comment{Forward substitution eliminating $a_i$}
     \State $b_i = {i+1}/i$ \Comment{Update ${b}_i$}
-    \State $g_i = g_i + {g}_{i-1}/{{b}_{i-1}}$ \Comment{Update ${g}_i$}
+    \State $g_i = g_i + g_{i-1}/{b_{i-1}}$ \Comment{Update $g_i$}
   \EndFor
-
   \Statex
   \State $v_n = 0$ \Comment{Backward substitution obtaining $v_i$}
   \For {$i = n-1, \dots, 1$}
@@ -266,21 +283,19 @@ Where we have called the last diagonal element $i_n$. We see that $b_i = \frac{i
   \EndFor
 \end{algorithmic}
 \end{algorithm}
-
-Similarly to the general algorithm we can calculate total FLOPS:
-\begin{center}
-    $(2*2+2)(n-2)+1 = 6n-11$
-\end{center}
-Which for large $n$ is considerably less. If we take into a account that $b_i = \frac{i+1}{i}$ can be precalculated for all $i \in [1, \hdots, n]$ before hand, we get a total number of FP:
+Similarly to the general algorithm we can calculate total number of floating point operations (not including calculation of $b_i$):
 \begin{align*}
   (2 + 2)(n-2) = 4n - 8
 \end{align*}
-which for large n can be approximated to $4n$
+For large n this can be approximated to $4n$.
+\\
+PLOT OR EXAMPLE OF CODE WORKING?
 \subsection{LU decomposition}
 For the LU decomposition we ...\\
 FLOPS $O(n^3)$ se \url{https://en.wikipedia.org/wiki/LU_decomposition}, søk etter "float"
 
 \subsection{Comparing precision and error}
+In order to compare the precesion of the different solutions we will use the relative error bwteen the numerical $v_i$ and analytical $f(x_i) solution as follow
 
 
 \subsection{Implementation}

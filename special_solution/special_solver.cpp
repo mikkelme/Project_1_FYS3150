@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
         ofile << setiosflags(ios::showpoint | ios::uppercase);
          //      ofile << "       x:             approx:          exact:       relative error" << endl;
         ofile << setw(15) << setprecision(8) << time*pow(10,6)<<" mu s" <<endl;
-        for (int i = 1; i < n-1; i++){
+        for (int i = 1; i < n+1; i++){
           double RelativeError = log10(fabs((analytic(x[i]) - v[i])/analytic(x[i])));
           if (RelativeError > max_err){
             max_err = RelativeError;}
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
       }
 
       if (exponent > 4){
-        for (int i = 1; i < n-1; i++){
+        for (int i = 1; i < n+1; i++){
           double RelativeError = log10(fabs((analytic(x[i]) - v[i])/analytic(x[i])));
           if (RelativeError > max_err){
             max_err = RelativeError;}
