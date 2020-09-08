@@ -145,11 +145,11 @@
             f_n
           \end{bmatrix}
     \end{align*}
-    From this we see that we can write the problem as a linear set of equation:
+    \\ From this we see that we can write the problem as a linear set of equation:
     \begin{align*}
       \vec{A}\vec{v} = \vec{g}
     \end{align*}
-    With the following definitions:
+    With the following definitions:\\
     \begin{align*}
       \vec{A} =
       \begin{bmatrix}
@@ -176,7 +176,7 @@
       \end{bmatrix}
     \end{align*}
 \subsection{General solution using Gausian elimination}
-We can solve our set of linear equations generally using Gaussian elimination on the matrix $\vec{A}\vec{v} = \vec{g}$, where we now define amore generilazed matrix $\vec(A)$ as:
+We can solve our set of linear equations using Gaussian elimination on the matrix $\vec{A}\vec{v} = \vec{g}$. In the beginning we assume a more generilazed matrix $\vec(A)$ as:
 \begin{align*}
   A =
   \begin{bmatrix}
@@ -188,27 +188,26 @@ We can solve our set of linear equations generally using Gaussian elimination on
     0 & \cdots & & 0 & a_{n-1} & b_n
   \end{bmatrix}
 \end{align*}
-where $a_i$ are the elements below the diagonal, $b_i$ are the elements on the diagonal and $c_i$ are the elements above the diagonal. This give us the algorithm:
-\begin{algorithm}
+\\ Here $a_i$ are the elements below the diagonal, $b_i$ are the elements on the diagonal and $c_i$ are the elements above the diagonal. In order to solve this we use first a forward substitution and then a backwards substitution \cite{linalg}. The implementation of this is showed in Algorithm 1:
+\begin{algorithm}[H]
 \caption{General algorithm}
 \begin{algorithmic}[1] %fra algpseudocode
   \For {$i = 2, \dots, n$} \Comment{Forward substitution eliminating $a_i$}
     \State $b_i = b_i - c_{i-1}\cdot {a_i}/{{b}_{i-1}}$ \Comment{Update ${b}_i$}
     \State $g_i = g_i - {g}_{i-1}\cdot {a_i}/{{b}_{i-1}}$ \Comment{Update ${g}_i$}
   \EndFor
-
   \Statex
   \State $v_n = g_n/B_n;$ \Comment{Backward substitution obtaining $v_i$}
   \For {$i = n-1, \dots, 1$}
-    \State $v_i = \frac{g_i - c_i\cdot v_{i+1}}{b_i}$
+    \State $v_i = (g_i - c_i\cdot v_{i+1})/b_i$ % \frac{g_i - c_i\cdot v_{i+1}}{b_i}$
   \EndFor
 \end{algorithmic}
 \end{algorithm}
-We can calculate the algorithms number of Floating Point Operations. Each arithmetic operation is one FLO(PS). So in our forward substitution we have $2 \cdot 3$ FLOPS and in the backward substitution we have $1+3$ FLOPS. The forward substitution goes from $2$ to $n$, totaling $n-2$ points. The backward substitution also has $n-2$ points. Then the total number of FLOPS are:
-\begin{center}
-    $(6+3)(n-2)+1 = 9n-17$
-\end{center}
-
+We can calculate the algorithms number of Floating Point Operations. In our forward substitution we have $2 \cdot 3$ operations for each loop which runs for a total of n-1 times. In the backward substitution we have a single leading operation and then 3 operations which loops for a total of n-1. The total number of operations is then
+\begin{align*}
+  (6 + 3)(n - 1) + 1 = 9n - 8
+\end{align*}
+For large n we can approximate this as 9n. 
 \subsection{Simplified specific solution}
 In this specific case we have $a = -1,\ b = 2,\ c = -1$ which means we can further simplify our matrix $\vec{A}$:
 \begin{align*}
@@ -305,7 +304,7 @@ We used \verb!C++! to implement our algorithms ... and we used Pythons library M
     \begin{center}
     \caption{CPU Time}
     \begin{tabular}{|c|c|c|c|} \hline
-    \textbf{N} & \textbf{General algorithm [s]} & \textbf{Special algorithm} & \textbf{LU Decomposition} \\ \hline
+    \textbf{N} & \textbf{General algorithm: t [s]} & \textbf{Special algorithm: t [s]} & \textbf{LU Decomposition: t [s]} \\ \hline
     $10^1$ & $\num{3e-6}$     & $\num{3e-6}$    & $\num{9.81e-4}$ \\ \hline
     $10^2$ & $\num{4e-6}$     & $\num{4e-6}$    & $\num{1.96e-4}$ \\ \hline
     $10^3$ & $\num{3.8e-5}$   & $\num{3.7e-5}$  & $\num{1.02e-2}$ \\ \hline
@@ -343,7 +342,7 @@ The computer should be able to make a maximum of $\num2.5e9$ floating point oper
 \begin{center}
   FLOPS = FP / CPU Time $\approx 0.28 \ GHz$
 \end{center}
-We see that there is some room up the maximum capacity of the processor (2.5 GHz), but this might be somewhat expectable
+We see that there are some room up the maximum capacity of the processor (2.5 GHz), but this might be somewhat expectable
 
 \section{Conclusion}
 In this report we have used three different ways of computing $\vec{A}\vec{v} = \vec{g}$ and have seen that efficiency of the methods vary greatly. We have witnessed the importance of efficient implementation of algorithms ...
@@ -353,7 +352,10 @@ In this report we have used three different ways of computing $\vec{A}\vec{v} = 
 \section{References} %
 
 \begin{thebibliography}{9}
-\bibitem{poisson_paper} S. B. Gueye, K. Talla and C. Mbow, "Solution of 1d poisson equation with neumann-dirichlet and dirichlet-neumann boundary conditions using the finite difference method", Journal of Electromagnetic Analysis and Applications, Vol. 6, No. 10, pp. 309, 2014.
+  \bibitem{poisson_paper} S. B. Gueye, K. Talla and C. Mbow, "Solution of 1d poisson equation with neumann-dirichlet and dirichlet-neumann boundary conditions using the finite difference method", Journal of Electromagnetic Analysis and Applications, Vol. 6, No. 10, pp. 309, 2014.
+
+  \bibitem{linalg} Hjort-Jensen, M., 2018. Computational Physics Lectures: Linear Algebra methods,  accesable at course github repository. \url{http://compphysics.github.io/ComputationalPhysics/doc/pub/linalg/pdf/linalg-print.pdf}
+
 
 
 
