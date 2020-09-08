@@ -40,20 +40,20 @@ int main(int argc, char *argv[])
 
     for (int exponent = 1; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
-      h = 1./((double)n);
+      h = 1./((double)n + 1);
       double hh = h*h;
       max_err = - pow(10, 7);
 
 
 
       //Define arrays
-      double *D = new double [n];
-      double *E = new double [n];
-      double *g = new double [n];
-      double *x = new double [n];
-      double *v = new double [n];
+      double *D = new double [n+2];
+      double *E = new double [n+2];
+      double *g = new double [n+2];
+      double *x = new double [n+2];
+      double *v = new double [n+2];
 
-      for (int i = 0; i < n; i++){
+      for (int i = 0; i < n+2; i++){
         x[i] = i*h;
         g[i] = hh*f(x[i]);
       }
@@ -63,13 +63,13 @@ int main(int argc, char *argv[])
 
       //Forward Sub
       D[0] = d;
-      for (int i = 1; i < n; i++){
+      for (int i = 2; i < n+1; i++){
         D[i] = (i + 1.)/1.;
         g[i] = g[i] + (i-1.)*g[i-1]/i;
       }
 
       //Backwards sub
-      for (int i = n-1; i > 0; i--){
+      for (int i = n; i > 0; i--){
         v[i] = i/(i+1.)*(g[i] + v[i+1]);
       }
 

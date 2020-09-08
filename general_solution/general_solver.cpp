@@ -43,20 +43,20 @@ int main(int argc, char *argv[])
 
     for (int exponent = 1; exponent <= max_exp; exponent++){
       n = pow(10, exponent);
-      h = 1./((double)n);
+      h = 1./((double)n + 1);
       double hh = h*h;
       max_err = - pow(10, 7);
 
 
       //Define arrays
-      double *A = new double [n];
-      double *B = new double [n];
-      double *C = new double [n];
-      double *g = new double [n];
-      double *x = new double [n];
-      double *v = new double [n]; //Discretized Solution
+      double *A = new double [n+2];
+      double *B = new double [n+2];
+      double *C = new double [n+2];
+      double *g = new double [n+2];
+      double *x = new double [n+2];
+      double *v = new double [n+2]; //Discretized Solution
 
-      for (int i = 0; i < n; i++){
+      for (int i = 0; i < n+2; i++){
         A[i] = a;
         B[i] = b;
         C[i] = c;
@@ -68,15 +68,15 @@ int main(int argc, char *argv[])
       start = clock();
 
       //Forward Sub
-      for (int i = 2; i < n; i++){
+      for (int i = 2; i < n+1; i++){
         B[i] = B[i] - A[i]*C[i-1]/B[i-1];
         g[i] = g[i] - A[i]*g[i-1]/B[i-1];
       }
 
       //Backwards Sub
-      v[0] = 0.; //v[n-1] = 0.;
-      v[n-1] = g[n-1]/B[n-1];
-      for (int i = n-2; i > 0; i--){
+      //v[0] = 0.; //v[n-1] = 0.;
+      v[n] = g[n]/B[n];
+      for (int i = n-1; i > 0; i--){
         v[i] = (g[i] - C[i]*v[i+1])/B[i];
       }
       finish = clock();

@@ -52,7 +52,6 @@ int main(int argc, char *argv[])
       max_err = - pow(10, 7);
 
 
-
       //Matrix
       n = n-1; // shift so end-points are avoided
       mat A = zeros<mat>(n,n);

@@ -66,35 +66,43 @@
     \begin{align*}
       u''(x) = f(x), \quad x \in (0,1), \quad u(0) = u(1) = 0
     \end{align*}
-    In our case we will provide the function:
+    In our case we will use the function:
     \begin{align*}
       f(x) = 100e^{-10x}
     \end{align*}
-    Note that the algorithms for solving this problem will not be depedent on this specefic choice of f(x). The reason why we stick to this function is because we have the following analytical solution for f(x):
+    Note that the algorithms for solving the problem will not be depedent on this specefic choice of f(x). The reason why we stick to this function is for the praticality of having the following analytical solution for f(x):
     \begin{align*}
       u(x) = 1 - (1 - e^{-10})x - e^{-10x}
     \end{align*}
-    We will use this analytical solution to evaluate the precision of the numerical solutions for different choices of steplength $h$ between the discretized gridpoints $x_i$.
-  \subsection{Rewritting the problem as a set of linear equations}
-    In order to solve the Poisson equation numerically we discretize u as $v_i$ with grid points $x_i = ih$ in the interval $x \in [x_0 = 0,x_1 = 1]$. We then have the step length $h = 1/(n + 1)$. We use the following second derivative approximation
+    We can ensure that this is a valid Sslution by inserting it into the Poission equation. First we calculate double derivative of u(x):
     \begin{align*}
-      -u''(x_i) \approx -\frac{v_{i+1} + 2v_i - v_{i+1}}{h^2} =  f(x_i)
+      u'(x) = -(1 - e^{-10}) + 10e^{-10x}, \quad u''(x) = -100e^{-10x}
     \end{align*}
+    We now see that the solution satisfies the Poisson equation:
+    \begin{align*}
+      -u''(x) = 100e^{-10x} = f(x)
+    \end{align*}
+    We can therefore use this analytical solution to evaluate the precision of the numerical solutions for different choices of step length $h$.
+  \subsection{Rewritting the problem as a set of linear equations}
+    In order to solve the Poisson equation numerically we discretize u as $v_i$ with $n + 2$ grid points $x_i = ih$ for $i = 0, 1, \hdots, n + 1$. To clarify we have $x_0 = 0$, $x_{n+1} = 1$ which are spaced with step length $h = 1/(n + 1)$. The boundary conditions is then $v_0 = v_{n+1} = 0$. We use the following second derivative approximation
+    \begin{center}
+      $-u''(x_i) \approx -\frac{v_{i+1} + 2v_i - v_{i+1}}{h^2} =  f(x_i)$ \quad for $i = 1, \hdots, n$
+    \end{center}
     $\Longleftrightarrow$
     \begin{align*}
       -v_{i-1} + 2v_i - v_{i+1} = h^2f(x_i)
     \end{align*}
-    We define the colum vector $\vec{v} = [v_1, v_2, \hdots, v_{n+1}]$ and try to setup the equation for every step i. As we do this we see a pattern appearing
+    Notice that we cannot calculate the second derivative approximation at the end points $i = 0$ and $i = n + 1$ since we need avaliable points $v_{\pm 1}$ for the calculation. We define the colum vector $\vec{v} = [v_1, v_2, \hdots, v_n]$ and try to setup the equation for every step $i = 1, \hdots, n$. As we do this we see a usefull pattern appearing
     \begin{align*}
           \begin{bmatrix}
             2 & -1 & 0 & \cdots & 0
           \end{bmatrix}
           \begin{bmatrix}
-            v_0 \\
+            v_1 \\
             \vdots \\
-            v_{n+1}
+            v_n
           \end{bmatrix}
-    = h^2f(x_0)
+    = h^2f(x_1)
     \end{align*}
     \begin{align*}
           \begin{bmatrix}
@@ -102,14 +110,14 @@
             -1 & 2 & -1 & 0 & \cdots & \cdots
           \end{bmatrix}
           \begin{bmatrix}
-            v_0 \\
+            v_1 \\
             \vdots \\
-            v_{n+1}
+            v_n
           \end{bmatrix}
     = h^2
           \begin{bmatrix}
-            f(x_0) \\
-            f(x_1)
+            f(x_1) \\
+            f(x_2)
           \end{bmatrix}
     \end{align*}
     \begin{align*}
@@ -125,16 +133,16 @@
             0 & \cdots & & 0 & -1 & 2
           \end{bmatrix}
           \begin{bmatrix}
-            v_0 \\
+            v_1 \\
             \vdots \\
-            v_{n+1}
+            v_n
           \end{bmatrix}
     = h^2
           \begin{bmatrix}
-            f(x_0) \\
             f(x_1) \\
+            f(x_2) \\
             \vdots \\
-            f_{n+1}
+            f_n
           \end{bmatrix}
     \end{align*}
     From this we see that we can write the problem as a linear set of equation:
@@ -154,31 +162,33 @@
       \end{bmatrix}
       \quad, \vec{v} =
       \begin{bmatrix}
-        v_0 \\
         v_1 \\
+        v_2 \\
         \vdots \\
-        v_{n+1}
+        v_n
       \end{bmatrix}
       \quad, \vec{\tilde{g}} = h^2
       \begin{bmatrix}
-        f(x_0) \\
         f(x_1) \\
+        f(x_2) \\
         \vdots \\
-        f_{n+1}
+        f_n
       \end{bmatrix}
     \end{align*}
-    In this project we use $f(x) = 100e^{-10x}$. The solution for the Poisson equation in this case is given to be $u(x) = 1 - (1 - e^{-10})x - e^{-10x}$. We can ensure that this is true by inserting it and checking that the equarion holds remains true. First find the double derivative of u(x):
-    \begin{align*}
-      u'(x) = -(1 - e^{-10}) + 10e^{-10x}, \quad u''(x) = -100e^{-10x}
-    \end{align*}
-    We now see that the solution satisfy the Poisson equation:
-    \begin{align*}
-      -u''(x) = 100e^{-10x} = f(x)
-    \end{align*}
 \subsection{General solution using Gausian elimination}
-Do Gaussial elimination... (or not)\\
-We can solve our problem generally using Gaussian elimination on the matrix $\vec{A}\vec{v} = \vec{g}$, where $a_i$ are the elements below the diagonal, $b_i$ are the elements on the diagonal and $c_i$ are the elements above the diagonal.
-
+We can solve our set of linear equations generally using Gaussian elimination on the matrix $\vec{A}\vec{v} = \vec{g}$, where we now define amore generilazed matrix $\vec(A)$ as:
+\begin{align*}
+  A =
+  \begin{bmatrix}
+    b_1 & c_1 & 0 & \cdots & \cdots & 0 \\
+    a_1 & b_2 & c_2 & 0 & \cdots & \cdots \\
+    0 & a_2 & b_3 & c_3 & 0 & \cdots \\
+    \cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\
+    0 & \cdots & & a_{n-2} & b_{n-1} & c_{n-1} \\
+    0 & \cdots & & 0 & a_{n-1} & b_n
+  \end{bmatrix}
+\end{align*}
+where $a_i$ are the elements below the diagonal, $b_i$ are the elements on the diagonal and $c_i$ are the elements above the diagonal. This give us the algorithm:
 \begin{algorithm}
 \caption{General algorithm}
 \begin{algorithmic}[1] %fra algpseudocode
@@ -188,19 +198,18 @@ We can solve our problem generally using Gaussian elimination on the matrix $\ve
   \EndFor
 
   \Statex
-  \State $v_n = 0$ \Comment{Backward substitution obtaining $v_i$}
+  \State $v_n = g_n/B_n;$ \Comment{Backward substitution obtaining $v_i$}
   \For {$i = n-1, \dots, 1$}
     \State $v_i = \frac{g_i - c_i\cdot v_{i+1}}{b_i}$
   \EndFor
 \end{algorithmic}
 \end{algorithm}
-
-We can calculate the algorithms number of Floating Point Operations Per Second (FLOPS) easily. Each arithmetic operation is one FLO(PS). So in our forward substitution we have $2 \cdot 3$ FLOPS and in the backward substitution we have $1+3$ FLOPS. The forward substitution goes from $2$ to $n$, totaling $n-2$ points. The backward substitution also has $n-2$ points. Then the total number of FLOPS are:
+We can calculate the algorithms number of Floating Point Operations. Each arithmetic operation is one FLO(PS). So in our forward substitution we have $2 \cdot 3$ FLOPS and in the backward substitution we have $1+3$ FLOPS. The forward substitution goes from $2$ to $n$, totaling $n-2$ points. The backward substitution also has $n-2$ points. Then the total number of FLOPS are:
 \begin{center}
     $(6+3)(n-2)+1 = 9n-17$
 \end{center}
 
-\subsection{Simplified problem specific solution}
+\subsection{Simplified specific solution}
 In this specific case we have $a = -1,\ b = 2,\ c = -1$ which means we can further simplify our matrix $\vec{A}$:
 \begin{align*}
     \vec{A} =
@@ -309,6 +318,12 @@ We used \verb!C++! to implement our algorithms ... and we used Pythons library M
     \label{tab:final_res}
   \end{table}
 
+  Computer specs:
+  \begin{center}
+    CPU = 2.5 GHz Intel Core i5
+  \end{center}
+
+
 \subsection{General algorithm}
 
 \subsection{Special algorithm}
@@ -318,7 +333,17 @@ We used \verb!C++! to implement our algorithms ... and we used Pythons library M
 \section{Discussion}
 Error analysis \\
 \\
-
+The computer should be able to make a maximum of $\num2.5e9$ floating point operations pr. second. We can inevestegate the number of FLOPS for the general algorithm with $n = \num{e7}$:
+\begin{center}
+  $FP = \num{9e7} - 17 \approx \num{9e7}$
+\end{center}
+\begin{center}
+  $\text{CPU Time} = 0.316 \ s$
+\end{center}
+\begin{center}
+  FLOPS = FP / CPU Time $\approx 0.28 \ GHz$
+\end{center}
+We see that there is some room up the maximum capacity of the processor (2.5 GHz), but this might be somewhat expectable
 
 \section{Conclusion}
 In this report we have used three different ways of computing $\vec{A}\vec{v} = \vec{g}$ and have seen that efficiency of the methods vary greatly. We have witnessed the importance of efficient implementation of algorithms ...
