@@ -23,10 +23,7 @@
     pdfpagemode=FullScreen
 }
 
-
-
 \renewcommand{\vec}[1]{\mathbf{#1}} %ny definisjon av \vec så det blir bold face i stedet for vector-pil.
-
 
 \captionsetup[table]{skip=10pt}
 \bibliographystyle{plain}
@@ -55,9 +52,6 @@
     \item The structure of the report
     \item conlusion?
   \end{enumerate}
-
-
-
 
 
 \section{Method}
@@ -302,29 +296,28 @@ Her kommer noe om FLOPS
 \subsubsection*{Proof that L or U is invertible}
 A matrix is invertible if the determinant is not equal to zero; $\det A \neq 0$. A property of triangular matrices is that the determinant is the product of the values on the diagonal. In our case we have non-zero real numbers so the matrices are invertible.
 
-\subsection{Comparing precision and error}
+\subsection{Comparing precision and time}
 In order to compare the precesion of the different solutions we will use the relative error between the numerical solution ($v_i$) and the analytical solution (($f(x_i)$). For practical reasons we will use the take the logarithm (base 10) so the relative error is given as
 \begin{align*}
   \epsilon_i = log_{10}\left|\frac{v_i - u_i}{u_i}\right|
 \end{align*}
-Since we divide with the analytical solution $u_i$ we cannot make this calculation for the end points where $u_0 = u_{n+1} = 0$. This means that we will calculate $\epsilon_i$ for $i 1, \hdots, n$. When we lower the step length $h$ we expect the error to decrease as well. When plotting $h$ with a logaritmic axis (base 10) against \epsilon_i we should see a linear trend. The slope of this will tell os wheter the error is proportional to $n^1, n^2, n^3$ and so on. At some point though we could expiernce that this trend is interrupted by erros in floating-point arithmetic due to round-off. We want to investegate if and when this happens.
+Since we divide with the analytical solution $u_i$ we cannot make this calculation for the end points where $u_0 = u_{n+1} = 0$. This means that we will calculate $\epsilon_i$ for $i 1, \hdots, n$. When we lower the step length $h$ we expect the error to decrease as well. When plotting $h$ with a logaritmic axis (base 10) against $\epsilon_i$ we should see a linear trend. The slope of this trend can then be usefull in order determain the relationship between precesion and step length. At some point though we could expiernce that this trend is interrupted by erros in floating-point arithmetic due to round-off. We want to investegate if and when this happens.\\
+In addition to the precesion comparing we will also investegate whether we see any different in CPU time between the different algorithms. This should reflect back on the number of floating point operations done in each of them.
 \subsection{Implementation}
 We used \verb!C++! to implement our algorithms. The results are then written to a text file and read by a python script for the presentation of the results.
 
 \section{Results}
   GITHUB LINK HERE \\
-  Max error:
+  We collected the max of the relative error $\epsilon$ for different values of the step length $h$ for all the three algorithms. The result is shown in figure \ref{fig_max_err}
   \begin{figure}[H]
   \begin{center}
     \includegraphics[width = \textwidth]{figures/max_err.eps} \\
-    \caption{Log10 of the maximum error for each numerical solution compared to the analytical solution for different number of gridpoints n and different numerical methods.}
+    \caption{Relative error $\epsilon$ for different step length $h$. The relative error is defined with a logarithm and h is plotted on a logaritmic axis.}
     \label{fig:max_err}
     \end{center}
   \end{figure}
-
-
-
-
+  Note that we were not able to produce the results for LU decompositions with $h \le \num{e-5}$ meaning that we could not store a matrix of size $\num{e5} \times \num{e5}$ or larger. \\
+  The CPU time for the execution of the different runs can be seen in table \ref{tab:final_res}. Note that this varied a lot between each repetition of measurements
   \begin{table}[H]
     \begin{center}
     \caption{CPU Time}
@@ -341,22 +334,21 @@ We used \verb!C++! to implement our algorithms. The results are then written to 
     \end{center}
     \label{tab:final_res}
   \end{table}
-
-  Computer specs:
+  The computer which we run all the programs on have the following CPU specs:
   \begin{center}
     CPU = 2.5 GHz Intel Core i5
   \end{center}
-
-
-\subsection{General algorithm}
-
-\subsection{Special algorithm}
-
-\subsection{LU decomposition}
-
 \section{Discussion}
-Error analysis \\
-\\
+Regarding the development of the maximum relative error (show in figure \ref{fig:max_err}) we archived the expected trend that we were looking for. For all the algorithms we get a linear connection between $h$ and $\epsilon$ for $h \ge \num{e-4}$. For this section see that $\epsilon$ drops about 2 points for each logarithmic decreasement in h. This tell us that the error is proportional to $h^2$:
+\begin{align*}
+  \epsilon = \mathcal{O}(h^2)
+\end{align*}
+From the results we also see that the linear trend is broken at some point given us a point of minimum error. Since we were not able to go lower than $h = \num{-4}$ for the LU decomposition we can only compare the general and special algorithm here. In this case we see in both cases that the linear trend is broken around $h = \num{-5}$. For the general algorithm this happens quite drastically leavning us with a minimum (maximum) relative error of -8.84. For the special algorithm the error keeps decreasing all the way down to -10.18 at $h = \num{-6}$. This loss of precision happens due to round-off erros when handling to small increaments $h$. In the case of the special algorithm we see that the simplified calculations make us able to archieve higher precesion. Not only is this more efficient in relation to computer processing needed but also in maximum precesion that are able to archive. If we had to extract the most reliable solution from this problem we should choose the special algorithm with $h = \num{-6}$. Note that this might not be the precise minimum point, and we could still very $h$ in even smaller increaments to check for lower relative error. \\
+Regarding the CPU time we got some mixed results. Waiting to see if FREDRIK fixes better data. 
+
+
+
+
 The computer should be able to make a maximum of $\num2.5e9$ floating point operations pr. second. We can inevestegate the number of FLOPS for the general algorithm with $n = \num{e7}$:
 \begin{center}
   $FP = \num{9e7} - 17 \approx \num{9e7}$

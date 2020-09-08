@@ -34,12 +34,12 @@ color = ["tab:blue", "tab:green", "tab:red"]
 for i in range(N):
     plt.subplot(N, 1, i+1)
     plt.title(title[i])
-    plt.plot(h_space ,max_err[i], "o", color = color[i])
+    plt.plot(h_space ,max_err[i], "--o", color = color[i])
     for a,b in (zip(h_space, max_err[i])):
         plt.text(a*1.3, b, "{:2.2f}".format(b))
     plt.xscale("log")
     plt.xlim(0.5e-7,4e-1)
     plt.ylim(-11,0)
     plt.xlabel("h")
-    plt.ylabel(r"log10($\epsilon$)")
+    plt.ylabel(r"$\epsilon$")
 plt.show()
