@@ -33,7 +33,7 @@
 
 \title{Project 1: Computational Physics - FYS3150}
 \author{Fredrik Hoftun \& Mikkel Metzsch Jensen}
-\date{September 09, 2020}
+\date{September 10, 2020}
 \begin{document}
 \maketitle
 
@@ -295,11 +295,13 @@ For the LU decomposition we ...\\
 FLOPS $O(n^3)$ se \url{https://en.wikipedia.org/wiki/LU_decomposition}, søk etter "float"
 
 \subsection{Comparing precision and error}
-In order to compare the precesion of the different solutions we will use the relative error bwteen the numerical $v_i$ and analytical $f(x_i) solution as follow
-
-
+In order to compare the precesion of the different solutions we will use the relative error between the numerical solution ($v_i$) and the analytical solution (($f(x_i)$). For practical reasons we will use the take the logarithm (base 10) so the relative error is given as
+\begin{align*}
+  \epsilon_i = log_{10}\left|\frac{v_i - u_i}{u_i}\right|
+\end{align*}
+Since we divide with the analytical solution $u_i$ we cannot make this calculation for the end points where $u_0 = u_{n+1} = 0$. This means that we will calculate $\epsilon_i$ for $i 1, \hdots, n$. When we lower the step length $h$ we expect the error to decrease as well. When plotting $h$ with a logaritmic axis (base 10) against \epsilon_i we should see a linear trend. The slope of this will tell os wheter the error is proportional to $n^1, n^2, n^3$ and so on. At some point though we could expiernce that this trend is interrupted by erros in floating-point arithmetic due to round-off. We want to investegate if and when this happens.
 \subsection{Implementation}
-We used \verb!C++! to implement our algorithms ... and we used Pythons library Matplotlib to plot our results.
+We used \verb!C++! to implement our algorithms. The results are then written to a text file and read by a python script for the presentation of the results.
 
 \section{Results}
   GITHUB LINK HERE \\
@@ -370,6 +372,7 @@ In this report we have used three different ways of computing $\vec{A}\vec{v} = 
   \bibitem{poisson_paper} S. B. Gueye, K. Talla and C. Mbow, "Solution of 1d poisson equation with neumann-dirichlet and dirichlet-neumann boundary conditions using the finite difference method", Journal of Electromagnetic Analysis and Applications, Vol. 6, No. 10, pp. 309, 2014.
 
   \bibitem{linalg} Hjort-Jensen, M., 2018. Computational Physics Lectures: Linear Algebra methods,  accesable at course github repository. \url{http://compphysics.github.io/ComputationalPhysics/doc/pub/linalg/pdf/linalg-print.pdf}
+
 
 
 
