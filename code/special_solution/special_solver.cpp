@@ -47,8 +47,7 @@ int main(int argc, char *argv[])
 
 
       //Define arrays
-      double *D = new double [n+2];
-      double *E = new double [n+2];
+      double *B = new double [n+2];
       double *g = new double [n+2];
       double *x = new double [n+2];
       double *v = new double [n+2];
@@ -59,9 +58,9 @@ int main(int argc, char *argv[])
       }
 
       //Diagonal element pre-calculation
-      D[0] = d;
+      B[0] = d;
       for (int i = 1; i < n+1; i++){
-        D[i] = (i + 1.)/i;
+        B[i] = (i + 1.)/i;
       }
 
       clock_t start, finish;
@@ -69,20 +68,19 @@ int main(int argc, char *argv[])
 
       //Forward Sub
       for (int i = 2; i < n+1; i++){
-        g[i] = g[i] + g[i-1]/D[i-1];
+        g[i] = g[i] + g[i-1]/B[i-1];
       }
 
       //Backwards sub
       v[0] = v[n+1] = 0;
-      v[n] = g[n]/D[n];
+      v[n] = g[n]/B[n];
       for (int i = n-1; i > 0; i--){
-        v[i] = (g[i] + v[i+1])/D[i];
+        v[i] = (g[i] + v[i+1])/B[i];
       }
 
       finish = clock();
       double time =(double)(finish - start)/((double) CLOCKS_PER_SEC);
-      delete[] D;
-      delete[] E;
+      delete[] B;
       delete[] g;
 
 
